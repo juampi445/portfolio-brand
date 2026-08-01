@@ -1,0 +1,135 @@
+/* Dev tooling, not site UI: deliberately utilitarian. Portaled to <body> and
+   fixed to the viewport so no section stacking context or pointer-events: none
+   region can swallow it; z-index clears the fixed nav (z 10). */
+
+.rc-toggle,
+.rc-panel {
+  position: fixed;
+  top: 8rem;
+  right: 1rem;
+  z-index: 100;
+
+  font-family: Consolas, ui-monospace, monospace;
+  font-size: 11px;
+  color: #ececec;
+}
+
+.rc-toggle {
+  padding: 0.3rem 0.6rem;
+  border: 1px solid rgba(236, 236, 236, 0.3);
+  border-radius: 4px;
+  background: rgba(17, 17, 17, 0.85);
+  cursor: pointer;
+}
+
+.rc-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  width: 16.5rem;
+  max-height: calc(100vh - 9rem);
+  overflow-y: auto;
+  padding: 0.6rem;
+
+  border: 1px solid rgba(236, 236, 236, 0.25);
+  border-radius: 6px;
+  background: rgba(17, 17, 17, 0.92);
+}
+
+.rc-head {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.rc-head span {
+  flex: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.rc-head button {
+  padding: 0.2rem 0.45rem;
+  border: 1px solid rgba(236, 236, 236, 0.3);
+  border-radius: 3px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.rc-panel fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  padding: 0.4rem 0.5rem 0.5rem;
+  border: 1px solid rgba(236, 236, 236, 0.15);
+  border-radius: 4px;
+}
+
+.rc-panel legend {
+  padding-inline: 0.25rem;
+  opacity: 0.75;
+}
+
+.rc-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.rc-label {
+  width: 3.9rem;
+  flex-shrink: 0;
+  opacity: 0.75;
+}
+
+.rc-row input[type="range"] {
+  flex: 1;
+  min-width: 0;
+  accent-color: #47d7b5;
+}
+
+.rc-select {
+  flex: 1;
+  min-width: 0;
+  padding: 0.15rem 0.2rem;
+  border: 1px solid rgba(236, 236, 236, 0.2);
+  border-radius: 3px;
+  background: #1a1a1a;
+  color: inherit;
+  font: inherit;
+}
+
+.rc-number {
+  width: 3.4rem;
+  padding: 0.1rem 0.2rem;
+  border: 1px solid rgba(236, 236, 236, 0.2);
+  border-radius: 3px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+.rc-value {
+  width: 3.4rem;
+  text-align: right;
+}
+
+.rc-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-right: 0.75rem;
+}
+
+.rc-row input[type="color"] {
+  width: 2.2rem;
+  height: 1.4rem;
+  padding: 0;
+  border: 1px solid rgba(236, 236, 236, 0.2);
+  border-radius: 3px;
+  background: transparent;
+}

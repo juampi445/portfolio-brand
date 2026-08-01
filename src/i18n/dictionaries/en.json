@@ -1,0 +1,201 @@
+{
+  "meta": {
+    "title": "Cuadrelli — Juan Pablo Cuadrelli",
+    "description": "One-person studio. Websites for businesses that need to look established from the first screen."
+  },
+  "nav": {
+    "projects": "Projects",
+    "services": "Services",
+    "about": "About",
+    "contact": "Contact",
+    "cta": "Let's talk",
+    "name": "Juan Cuadrelli",
+    "switchLanguage": "Switch to Spanish",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "menuLabel": "Site sections"
+  },
+  "hero": {
+    "kicker": "One-person studio",
+    "headline": "I design & build",
+    "words": [
+      "websites",
+      "online shops",
+      "landing pages",
+      "rebuilds"
+    ],
+    "tagline": "For businesses that need to look established from the first screen.",
+    "cta": "Start a project"
+  },
+  "heroSecondary": {
+    "stages": [
+      ["Idea", "Research", "Strategy", "Concept", "Plan"],
+      ["Design", "Identity", "UI", "UX", "Motion", "Detail"],
+      ["React", "Next.js", "TypeScript", "Performance", "SEO", "Accessibility"],
+      ["Launch", "Conversion", "Growth", "Scale", "Impact"]
+    ]
+  },
+  "projects": {
+    "title": "Projects",
+    "heading": "Selected work: client sites and projects of my own.",
+    "items": {
+      "nerva-studio": {
+        "outcome": "Fashion e-commerce, end to end: shop with dynamic filters, working cart and checkout, and a full admin dashboard.",
+        "tags": [
+          "E-commerce",
+          "Admin dashboard",
+          "UX/UI"
+        ]
+      },
+      "quintana": {
+        "outcome": "Prestige furniture e-commerce: gallery-grade product presentation for pieces that sell on craft.",
+        "tags": [
+          "E-commerce",
+          "Art direction",
+          "Furniture"
+        ]
+      },
+      "rocketly": {
+        "outcome": "Software studio site: services, vision and technical credibility for a team that ships.",
+        "tags": [
+          "Corporate site",
+          "Positioning",
+          "B2B"
+        ]
+      },
+      "void-strikers": {
+        "outcome": "In-house 2D action game: proof that I build interactive things, not just pages.",
+        "tags": [
+          "Game",
+          "Canvas & physics",
+          "R&D"
+        ]
+      },
+      "lol-champions": {
+        "outcome": "Data-heavy app: advanced filtering and video-rich detail views over a live game catalog.",
+        "tags": [
+          "Web app",
+          "Data & filtering",
+          "API"
+        ]
+      }
+    }
+  },
+  "services": {
+    "title": "Services",
+    "heading": "Nearly everything I build is one of three shapes.",
+    "lead": "Fixed scope, honest timeline, built to last.",
+    "includedLabel": "Included",
+    "items": {
+      "landing": {
+        "title": "Landing Pages",
+        "tag": "One offer, one page",
+        "lead": "A single page built to do one thing: turn the visitor in front of it into a lead or a sale.",
+        "included": [
+          "Everything points at one call to action",
+          "Loads in under a second on any phone",
+          "Analytics and tracking wired in from day one"
+        ],
+        "timeline": "Live in 1 to 2 weeks"
+      },
+      "events": {
+        "title": "Event Websites",
+        "tag": "For the whole occasion",
+        "lead": "One link that carries the event, from the first save-the-date to the morning of.",
+        "included": [
+          "RSVPs and the guest list, handled on the site",
+          "Styled to match your invitations",
+          "Schedule, directions and updates in one place"
+        ],
+        "timeline": "Live in 2 to 3 weeks"
+      },
+      "professional": {
+        "title": "Professional Websites",
+        "tag": "Your full presence",
+        "lead": "The complete site for a name that has to look established from the very first screen.",
+        "included": [
+          "Designed around your identity, never a template",
+          "Content you can update yourself",
+          "Search-ready, and bilingual when you need it"
+        ],
+        "timeline": "Live in 3 to 4 weeks"
+      }
+    },
+    "cta": {
+      "question": "Need something outside these three?",
+      "action": "Let's scope it together."
+    }
+  },
+  "about": {
+    "title": "About",
+    "heading": "You're working directly with the person who writes the code.",
+    "lead": [
+      "I'm Juan Pablo Cuadrelli, and this is a one-person studio.",
+      "You talk to the developer building your site, not an account manager passing messages along.",
+      "The work is for businesses that need to look established from the first screen."
+    ],
+    "ledger": {
+      "rocketly": {
+        "period": "6 months",
+        "role": "Co-founder, Full Stack Developer"
+      },
+      "noswar": {
+        "period": "2 years",
+        "role": "Frontend & Game Developer, Team Lead"
+      },
+      "minimalart": {
+        "period": "1+ year",
+        "role": "Frontend Developer"
+      }
+    },
+    "credentialsLabel": "Credentials",
+    "credentials": {
+      "henry": {
+        "title": "Henry Full Stack",
+        "description": "Full stack web development, 800+ hours"
+      },
+      "efset": {
+        "title": "EF SET C1",
+        "description": "Advanced English proficiency"
+      },
+      "cv": {
+        "title": "Download CV",
+        "description": "Full history and stack, PDF"
+      }
+    }
+  },
+  "contact": {
+    "title": "Contact",
+    "heading": "Tell me what you're building.",
+    "lead": "A sentence or two is enough to start. I read every message and answer within a day.",
+    "email": "jpcuadrelli@gmail.com",
+    "location": "Tandil, Argentina",
+    "copy": "Copy",
+    "copied": "Copied",
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "message": "Message",
+      "messagePlaceholder": "A shop, a landing page, a rebuild of something tired…",
+      "submit": "Send message",
+      "sending": "Sending",
+      "errors": {
+        "name": "Your name, so I know who I'm replying to.",
+        "email": "That address doesn't look right. I need a valid one to reach you.",
+        "message": "Say a little about the project.",
+        "failed": "The message didn't send. Try again, or email me directly at jpcuadrelli@gmail.com."
+      },
+      "successTitle": "Message sent.",
+      "successBody": "It's in my inbox. You'll hear from me within a day.",
+      "again": "Send another"
+    }
+  },
+  "footer": {
+    "tagline": "Sites for small businesses that need to look established from the first screen.",
+    "colophon": "Designed and built in Tandil, Argentina.",
+    "sectionsLabel": "Sections",
+    "directLabel": "Direct contact",
+    "linkedin": "LinkedIn",
+    "backToTop": "Back to top"
+  }
+}

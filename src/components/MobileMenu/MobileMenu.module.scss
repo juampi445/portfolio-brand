@@ -1,0 +1,788 @@
+@use "../../styles/variables" as *;
+
+// ─── Animation clock ─────────────────────────────────────────────────────────
+// Every duration, delay and curve for the open/close sequence, in one place.
+// The whole animation is CSS transitions keyed off `[data-open]` on the root:
+// no JS animation in the path, so it can't silently fail to run, and every step
+// is inspectable on the element in devtools.
+
+// power4.out — the wipe's curve. Fast off the line, long decelerating tail, so
+// the four leading edges visibly settle rather than stopping.
+$ease-wipe: cubic-bezier(0.165, 0.84, 0.44, 1);
+// Ease-out-quint, the site's curve, for the rows climbing into place.
+$ease-item: cubic-bezier(0.22, 1, 0.36, 1);
+// Leaving is not an event: one fast ease-in, everything together.
+$ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
+// Every delay below is written out as a literal by Sass at build time. Nothing
+// reaches the browser as `calc()` or `var()` — an earlier version staggered the
+// sheets with `calc(var(--i) * 55ms)` fed by an inline custom property, and if
+// that property arrives as anything but a bare number the calc is invalid,
+// which silently invalidates the WHOLE `transition` shorthand it sits in. The
+// result is an element that snaps with no transition and no error anywhere.
+// Sass arithmetic costs nothing at runtime and cannot fail that way.
+// Two prelayers ahead of the panel. The count drives the cascade loops and the
+// panel's own delay below, so changing it here re-times the whole sequence.
+$sheet-count: 2;
+$sheet-duration: 500ms;
+$sheet-stagger: 60ms;
+// The panel follows the last sheet by the reference's 80ms beat.
+$panel-delay: ($sheet-count - 1) * $sheet-stagger + 80ms;
+$panel-duration: 620ms;
+
+// The reference's ratios of the panel's own travel: rows start 15% in, the
+// contact block 40% in, so both are moving while the surface is still settling.
+$items-delay: $panel-delay + $panel-duration * 0.15;
+$items-stagger: 90ms;
+$items-duration: 900ms;
+$foot-delay: $panel-delay + $panel-duration * 0.4;
+$foot-duration: 550ms;
+
+$close-btn-delay: $panel-delay + 250ms;
+$close-btn-duration: 300ms;
+
+// Closing: everything leaves together, faster than it arrived, no stagger.
+$exit-duration: 320ms;
+// The panel's contents don't move on the way out — the panel carries them. They
+// snap back to parked only once it is offscreen, which is what makes the next
+// open start from below. (The reference does this in its close tween's
+// onComplete; here it is a delayed zero-length transition.)
+$reset-delay: $exit-duration + 50ms;
+
+// Reduced motion: a cross-fade in place. Short, but never zero — see the note
+// in the media query at the foot of this file.
+$reduced-in: 300ms;
+$reduced-out: 200ms;
+
+// ─── Toggle ──────────────────────────────────────────────────────────────────
+// Bare marks, no container. The language toggle beside it is a pill because it
+// has two states to hold and a thumb to slide between them; this has neither, so
+// a matching pill would be a box drawn around nothing — and two pills at the
+// same edge read as a segmented control the second one isn't part of.
+// currentColor throughout, so it inverts with the nav's two colour layers like
+// everything else in the bar.
+
+.toggle {
+  display: none;
+
+  // The target, not the mark: the lines inside are 22px, and this is what makes
+  // the control reachable without drawing anything at 48px.
+  width: 3rem;
+  height: 3rem;
+  place-items: center;
+
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+
+  // Optical alignment. The pill next to it ends at its border; this one ends at
+  // whitespace, so without the pull its 22px mark floats ~13px shy of the rail
+  // the logo and the language toggle sit on, and the bar looks mis-set.
+  margin-right: -0.6875rem;
+
+  transition: opacity 200ms ease-out,
+    transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  // The tap lands on the whole control, so the whole control acknowledges it.
+  &:active {
+    transform: scale(0.9);
+  }
+
+  // Nothing to outline but the mark itself, so the ring is drawn tight to it
+  // rather than around a 48px box of empty space.
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: -0.5rem;
+    border-radius: 0.75rem;
+  }
+}
+
+@media (hover: hover) {
+  .toggle:hover {
+    opacity: 0.7;
+  }
+}
+
+// Only below the breakpoint where the desktop links drop out. Above it there is
+// nothing for this button to reveal.
+@media (max-width: 48rem) {
+  .toggle {
+    display: grid;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toggle {
+    transition-duration: 1ms;
+  }
+}
+
+// Wider than the pill version was: with no container to give it presence, the
+// mark has to carry its own weight at the edge of the bar.
+.toggleIcon {
+  position: relative;
+  display: block;
+  width: 1.375rem;
+  height: 1.375rem;
+}
+
+.toggleLine {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+
+  // 1.5px, not 1px: a true hairline drops below a device pixel at some DPRs and
+  // renders as a broken grey smear. This is the thinnest weight that survives.
+  height: 1.5px;
+  margin-top: -0.75px;
+
+  border-radius: 1px;
+  background: currentColor;
+  will-change: transform;
+}
+
+// ─── Panel ───────────────────────────────────────────────────────────────────
+
+.root {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+
+  // The full screen, including the strip under a mobile browser's collapsing
+  // URL bar: dvh tracks the visible viewport as the chrome shows and hides,
+  // where a fixed element sized by its own `inset` can be left short of the
+  // bottom edge mid-gesture. vh first as the fallback for engines without dvh.
+  height: 100vh;
+  height: 100dvh;
+
+  // Clears the rocket console (z 100), which is the highest thing on the page.
+  // The nav header is lifted past this while the menu is open, so the avatar,
+  // the language toggle and the close button stay on top and stay usable.
+  z-index: 200;
+
+  // The layers rest offscreen at x: 100%; without this they would extend the
+  // scrollable area while parked.
+  //
+  // `clip`, not `hidden`. `hidden` still creates a scroll container — it only
+  // takes the scrollbar away — so anything that scrolls an element into view
+  // (a `.focus()` call, an anchor jump, a screen reader) can drag the parked
+  // layers into frame and leave the box scrolled sideways for good. `clip` is
+  // a true clip: no scroll container, nothing to scroll, programmatically or
+  // otherwise. `hidden` first as the fallback for engines without `clip`,
+  // where `preventScroll` on the focus call is the belt to this one's braces.
+  overflow: hidden;
+  overflow: clip;
+
+  // Only the panel takes a pointer. On the way out that hands the page back the
+  // moment the panel has cleared a given strip of screen, instead of holding a
+  // full-viewport blocker for the length of the exit.
+  pointer-events: none;
+}
+
+// The sheets never come to rest. They arrive ahead of the panel and are
+// immediately covered by it — the accent exists for the half-second of the wipe
+// and is gone once the menu is open, which is the whole budget it gets here.
+//
+// The rounded left edge is the only part of a sheet anyone ever sees, and it is
+// what turns a colour flash into a shape travelling: curved edges chasing each
+// other across the screen, then ink.
+//
+// Parked offscreen by the stylesheet, not by a mount-time animation: the layers
+// are always in the DOM (like the reference, which parks them with gsap.set),
+// and open/close only ever plays transforms over these resting values.
+.sheet {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+
+  // Parked offscreen.
+  transform: translateX(100%);
+  transition: transform $exit-duration $ease-exit;
+}
+
+.root[data-open="true"] .sheet {
+  transform: translateX(0);
+  transition: transform $sheet-duration $ease-wipe;
+}
+
+// The cascade, one literal delay per sheet. `data-tone` already identifies each
+// layer for its colour, so it identifies it for its beat too.
+@for $i from 1 through $sheet-count {
+  .root[data-open="true"] .sheet[data-tone="#{$i}"] {
+    transition-delay: ($i - 1) * $sheet-stagger;
+  }
+}
+
+// One ramp down the brand hue, ending where the ink panel begins: mint, the
+// sunk mint that carries on pale surfaces, then ink. Steps of the same colour
+// rather than unrelated ones — the eye reads a surface gaining depth, which is
+// what makes a stack of layers feel like a stack instead of a flicker, and each
+// step is a clear value drop so the edges stay legible over whatever they wipe
+// across. Both values come straight from the palette.
+.sheet[data-tone="1"] {
+  background: $color-primary;
+}
+
+.sheet[data-tone="2"] {
+  background: $color-accent;
+}
+
+.panel {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  // Ink and paper, the site's dark surface. No blur, no translucency: this
+  // covers the page rather than hovering over it, and a frosted panel would put
+  // the content it replaced back into the frame as noise.
+  background: $color-dark;
+  color: $color-light;
+
+  // The panel covers the nav bar, so the top inset is for its own close button
+  // (parked in the burger's exact spot), not for clearing the bar.
+  padding-block: calc(#{$nav-height-mobile} + 0.5rem) 2rem;
+  padding-inline: 1.5rem;
+
+  // Short viewports (a landscape phone, or the largest Dynamic Type step) scroll
+  // the panel rather than clipping the CTA off the bottom.
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  pointer-events: auto;
+
+  // Parked offscreen at rest, same as the sheets: closed is a place, not an
+  // animation state.
+  transform: translateX(100%);
+  transition: transform $exit-duration $ease-exit;
+  will-change: transform;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.root[data-open="true"] .panel {
+  transform: translateX(0);
+  transition: transform $panel-duration $ease-wipe $panel-delay;
+}
+
+// Notch, home indicator and rounded corners.
+@supports (padding: max(0px)) {
+  .panel {
+    padding-inline: max(1.5rem, env(safe-area-inset-left))
+      max(1.5rem, env(safe-area-inset-right));
+    padding-bottom: max(2rem, calc(env(safe-area-inset-bottom) + 1.25rem));
+  }
+}
+
+.sections {
+  // Sits at the top of the panel; the contact block below claims the remainder.
+  flex-shrink: 0;
+}
+
+.list {
+  list-style: none;
+}
+
+// A table of contents, not a stack of buttons: a hairline above every row and
+// one closing the set. The rules are painted on the row itself, which does not
+// move, so they are already drawn while the words are still climbing into them.
+.item {
+  position: relative;
+  overflow: hidden;
+
+  border-top: 1px solid color-mix(in srgb, #{$color-light} 14%, transparent);
+
+  &:last-child {
+    border-bottom: 1px solid color-mix(in srgb, #{$color-light} 14%, transparent);
+  }
+}
+
+// Parked below its row's mask, tilted; opening swings it up about the baseline's
+// left end, so each label pivots into place rather than riding an elevator.
+.itemInner {
+  transform: translateY(120%) rotate(5deg);
+  transform-origin: 0% 100%;
+  will-change: transform;
+
+  // Zero-length, but delayed until the panel is offscreen: on the way out the
+  // row holds perfectly still and is carried away, then resets unseen.
+  transition: transform 0s $reset-delay;
+}
+
+.root[data-open="true"] .itemInner {
+  transform: translateY(0) rotate(0deg);
+  transition: transform $items-duration $ease-item $items-delay;
+}
+
+// One literal delay per row, same reason as the sheets above. Four items is the
+// nav's whole set, and the loop is the source of truth for both.
+@for $i from 1 through 4 {
+  .root[data-open="true"] .item:nth-child(#{$i}) .itemInner {
+    transition-delay: $items-delay + ($i - 1) * $items-stagger;
+  }
+}
+
+.link {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+
+  // With the type below at line-height 1, this puts every row past 44px without
+  // needing a min-height that would fight the mask.
+  padding-block: 0.6rem;
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: -2px;
+  }
+}
+
+.linkLabel {
+  // Scales with the viewport rather than stepping at a breakpoint: the longest
+  // Spanish label ("Proyectos") has to clear the index numeral at 320px, and the
+  // shortest English one should not look lost at 768px.
+  font-size: clamp(2.25rem, 11.5vw, 3.5rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+
+  transition: color 250ms ease-out;
+}
+
+.index {
+  flex-shrink: 0;
+  padding-top: 0.5rem;
+
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  // Fixed-width digits, so 01 through 04 sit on the same right edge.
+  font-variant-numeric: tabular-nums;
+
+  color: $color-primary;
+  opacity: 0.5;
+
+  transition: opacity 250ms ease-out;
+}
+
+// The section on screen. Same signal the desktop bar gives with a held
+// underline, said here with the accent instead — an underline under type this
+// size would read as a rule, and the rows are already ruled.
+.link[aria-current] .linkLabel {
+  color: $color-primary;
+}
+
+.link[aria-current] .index {
+  opacity: 1;
+}
+
+// Touch has no hover, so the press is where the feedback has to land.
+.link:active .linkLabel {
+  color: $color-primary;
+}
+
+@media (hover: hover) {
+  .link:hover .linkLabel {
+    color: $color-primary;
+  }
+
+  .link:hover .index {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .linkLabel,
+  .index {
+    transition-duration: 1ms;
+  }
+}
+
+// ─── Contact block ───────────────────────────────────────────────────────────
+
+.foot {
+  // Pushed to the bottom on a tall phone, sitting directly under the list on a
+  // short one — `auto` gives the panel its breathing room without a fixed gap
+  // that would overflow at the small end.
+  margin-top: auto;
+  padding-top: 2.5rem;
+
+  // Parked lifted and invisible; opening fades it up after the rows. Same close
+  // discipline as those: holds still while the panel carries it out, resets
+  // once offscreen.
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0s $reset-delay,
+    transform 0s $reset-delay;
+}
+
+.root[data-open="true"] .foot {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity $foot-duration $ease-item $foot-delay,
+    transform $foot-duration $ease-item $foot-delay;
+}
+
+.footLabel {
+  margin-bottom: 0.875rem;
+
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
+
+// Three equal cells, divided by hairlines and closed by one above and one below.
+// Not three bordered tiles: boxes here would be the third framed thing in a
+// panel whose whole structure is rules, and the dividers already do the
+// separating a border would be drawn for.
+.channels {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  margin-bottom: 2rem;
+  list-style: none;
+
+  border-block: 1px solid color-mix(in srgb, #{$color-light} 14%, transparent);
+}
+
+.channelCell + .channelCell {
+  border-left: 1px solid color-mix(in srgb, #{$color-light} 14%, transparent);
+}
+
+.channel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+
+  // Comfortably past the 44px minimum in both directions — at three-up on a
+  // 375px screen each cell is ~109px wide, so the height is what makes these
+  // feel like targets rather than a row of glyphs.
+  min-height: 5.25rem;
+  padding: 0.75rem 0.5rem;
+
+  color: $color-light;
+
+  transition:
+    color 250ms ease-out,
+    background-color 250ms ease-out;
+
+  &:active {
+    color: $color-primary;
+    background: color-mix(in srgb, #{$color-primary} 8%, transparent);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: -2px;
+  }
+}
+
+@media (hover: hover) {
+  .channel:hover {
+    color: $color-primary;
+  }
+}
+
+// Big enough to be the thing you read in the cell — the label under it is a
+// caption, not the identifier.
+.channelIcon {
+  width: 1.75rem;
+  height: 1.75rem;
+  flex-shrink: 0;
+}
+
+// The brand marks are solid fills, the mail icon is a 1.5-weight stroke. At the
+// same box size the filled ones carry noticeably more ink, so they come down a
+// step to sit level with it.
+.brandIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.channelLabel {
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.55;
+
+  transition: opacity 250ms ease-out;
+}
+
+.channel:active .channelLabel {
+  opacity: 1;
+}
+
+@media (hover: hover) {
+  .channel:hover .channelLabel {
+    opacity: 1;
+  }
+}
+
+// ─── Primary action ──────────────────────────────────────────────────────────
+// Solid mint on ink: the one element in the panel that is asking for something,
+// and the only place the accent sits at rest. An outlined pill here would read
+// as one more quiet affordance among the channels above it.
+
+.cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  min-height: 3.75rem;
+  padding: 0.5rem 0.5rem 0.5rem 1.75rem;
+  border-radius: 999px;
+
+  background: $color-primary;
+  // Pinned ink rather than inherited: this is the one light-coloured surface in
+  // the panel, and the paper text everywhere else would drop to ~1.5:1 on it.
+  color: $color-dark;
+
+  transition: transform 250ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  &:active {
+    transform: scale(0.985);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 3px;
+  }
+}
+
+.ctaLabel {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+// An ink disc inside the mint, holding the arrow. It gives the bar a fixed point
+// for the arrow to travel against, and it is the detail that stops this being a
+// filled rectangle with a word in it.
+.ctaToken {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+
+  background: $color-dark;
+  color: $color-primary;
+
+  transition: transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ctaArrow {
+  width: 1.375rem;
+  height: 0.85rem;
+  flex-shrink: 0;
+
+  transition: transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cta:active .ctaToken,
+.cta:focus-visible .ctaToken {
+  transform: scale(1.06);
+}
+
+.cta:active .ctaArrow,
+.cta:focus-visible .ctaArrow {
+  transform: translateX(0.15rem);
+}
+
+@media (hover: hover) {
+  .cta:hover .ctaToken {
+    transform: scale(1.06);
+  }
+
+  .cta:hover .ctaArrow {
+    transform: translateX(0.15rem);
+  }
+}
+
+// ─── Close ───────────────────────────────────────────────────────────────────
+// The panel covers the nav bar, burger included, so it brings its own way out.
+// Same box, same spot, same 1.5px hairlines as the burger it replaces — the two
+// crossed lines land exactly where the two stacked ones were, so opening reads
+// as the control transforming, not as one button vanishing and another
+// appearing elsewhere.
+
+.close {
+  position: absolute;
+  // The burger's geometry, mirrored: a 3rem box vertically centred in the 5rem
+  // bar, its right edge pulled to the same optical rail (1.25rem gutter minus
+  // the box's internal 0.6875rem of air around the 22px mark).
+  top: calc((#{$nav-height-mobile} - 3rem) / 2);
+  right: 0.5625rem;
+
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: $color-light;
+  cursor: pointer;
+
+  // The root swallows pointers; this must not.
+  pointer-events: auto;
+
+  // Doesn't ride the panel: fades in once the wipe has landed, and out the
+  // instant a close begins.
+  opacity: 0;
+  transition:
+    opacity 100ms ease-out,
+    transform 200ms $ease-item;
+
+  &:active {
+    transform: scale(0.9);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: -0.5rem;
+    border-radius: 0.75rem;
+  }
+}
+
+.root[data-open="true"] .close {
+  opacity: 1;
+  transition:
+    opacity $close-btn-duration ease-out $close-btn-delay,
+    transform 200ms $ease-item;
+}
+
+@media (hover: hover) {
+  .close:hover {
+    color: $color-primary;
+  }
+}
+
+.closeIcon {
+  position: relative;
+  display: block;
+  width: 1.375rem;
+  height: 1.375rem;
+}
+
+.closeLine {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+
+  // Matches the burger's lines — see .toggleLine.
+  height: 1.5px;
+  margin-top: -0.75px;
+
+  border-radius: 1px;
+  background: currentColor;
+}
+
+.closeLine[data-dir="a"] {
+  transform: rotate(45deg);
+}
+
+.closeLine[data-dir="b"] {
+  transform: rotate(-45deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta,
+  .ctaToken,
+  .ctaArrow,
+  .channel,
+  .channelLabel {
+    transition-duration: 1ms;
+  }
+
+  // ─── Reduced motion ────────────────────────────────────────────────────────
+  // The stack cross-fades in place instead of travelling. What this setting
+  // asks us to drop is large positional motion — that is the vestibular
+  // problem — not the transition itself. A full-screen surface that blinks
+  // into existence with nothing between the two states is *more* disorienting
+  // than one that fades, and it leaves no signal that anything happened.
+  //
+  // So: the travel is fully cancelled (every transform jumps in 0s), and only
+  // the timing survives. The sheets keep their stagger, so the layering still
+  // reads as a stack.
+
+  .sheet,
+  .panel {
+    // Leaving: fade first, and only jump offscreen once the fade is done —
+    // otherwise the layer vanishes mid-fade and the close is a blink again.
+    opacity: 0;
+    transition:
+      opacity $reduced-out ease-out,
+      transform 0s $reduced-out;
+  }
+
+  .root[data-open="true"] .sheet {
+    opacity: 1;
+    transform: translateX(0);
+    transition:
+      opacity $reduced-in ease-out,
+      transform 0s;
+  }
+
+  @for $i from 1 through $sheet-count {
+    .root[data-open="true"] .sheet[data-tone="#{$i}"] {
+      transition-delay: ($i - 1) * $sheet-stagger, 0s;
+    }
+  }
+
+  .root[data-open="true"] .panel {
+    opacity: 1;
+    transform: translateX(0);
+    transition:
+      opacity $reduced-in ease-out,
+      transform 0s;
+  }
+
+  // The rows and the contact block are simply in place; the panel's own fade
+  // is what reveals them.
+  .itemInner,
+  .foot {
+    transition-duration: 0s;
+    transition-delay: $reduced-out;
+  }
+
+  .root[data-open="true"] .itemInner,
+  .root[data-open="true"] .foot {
+    transition-duration: 0s;
+    transition-delay: 0s;
+  }
+
+  .close {
+    transition:
+      opacity $reduced-in ease-out,
+      transform 1ms;
+  }
+
+  .root[data-open="true"] .close {
+    transition:
+      opacity $reduced-in ease-out,
+      transform 1ms;
+  }
+}

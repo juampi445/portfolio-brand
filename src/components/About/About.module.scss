@@ -1,0 +1,327 @@
+@use "../../styles/variables" as *;
+
+// Shared token now: the mint sunk into the ink, since raw mint is far too light
+// to read on this section's pale background.
+$accent: $color-accent;
+$rule: color-mix(in srgb, #{$color-dark} 14%, transparent);
+$rule-hover: color-mix(in srgb, #{$color-dark} 38%, transparent);
+$muted: color-mix(in srgb, #{$color-dark} 58%, transparent);
+$wash: color-mix(in srgb, #{$color-dark} 4%, transparent);
+
+$ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+
+.about {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: $gutter * 2;
+  // The row (both columns together) is centred in the viewport, but inside it
+  // the columns hang from the top: the claim starts level with the ledger's
+  // first rule rather than floating against its middle.
+  align-content: center;
+  align-items: start;
+
+  min-height: 100dvh;
+  padding: calc(#{$nav-height} + #{$gutter}) $gutter $gutter;
+
+  background-color: $color-primary-light;
+  color: $color-dark;
+}
+
+// Tier 1 — the claim. Not sticky: the section is one viewport tall, so there is
+// nothing for it to hold against.
+.statement {
+  display: flex;
+  flex-direction: column;
+}
+
+// Tier 2 + 3 share a left edge, so the ledger's rules and the cards' borders
+// line up into a single column of evidence.
+.record {
+  display: flex;
+  flex-direction: column;
+}
+
+.heading {
+  // Editorial scale: this is the largest type in the section by a wide margin,
+  // and the only place the section raises its voice.
+  font-size: clamp(1.75rem, 3vw, 2.75rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.lead {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+
+  margin-top: 2rem;
+  max-width: 34ch;
+
+  font-size: 1rem;
+  line-height: 1.6;
+  color: $muted;
+}
+
+// Tier 2 — the ledger. No boxes, no borders: rows are separated by rules and
+// nothing else, so the weight comes from the type and the space around it.
+// The rows bleed 1rem past the column on each side so their hover wash has room.
+// The list bleeds with them, otherwise its top rule would be 2rem shorter than
+// every divider below it.
+.ledger {
+  list-style: none;
+  margin-inline: -1rem;
+  border-top: 1px solid $rule;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: auto 8rem minmax(0, 1fr) auto auto;
+  // Centre, not baseline: a 40px logo has no baseline to sit on, and baseline
+  // alignment would hang it off the text like a dropped capital.
+  align-items: center;
+  gap: 1.25rem;
+
+  // The 1rem inline padding sits inside the list's bleed, so the row text lines
+  // up flush with the cards below while the wash extends past it.
+  padding: 1.5rem 1rem;
+  border-bottom: 1px solid $rule;
+
+  transition:
+    background-color 300ms $ease-out-expo,
+    border-color 300ms $ease-out-expo;
+
+  &:hover {
+    background-color: $wash;
+    border-bottom-color: $rule-hover;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $accent;
+    outline-offset: -2px;
+    border-radius: 2px;
+  }
+}
+
+// The marks come from three different brands, so they're normalised into one
+// container: same box, same radius, same neutral backing. Always full strength —
+// a logo is an identity, not a state.
+.rowLogo {
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+
+  border-radius: 8px;
+  background: color-mix(in srgb, #{$color-dark} 6%, transparent);
+  object-fit: contain;
+}
+
+.period {
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: $muted;
+}
+
+.role {
+  font-size: 1.0625rem;
+}
+
+.company {
+  font-size: 1.0625rem;
+  font-weight: 600;
+}
+
+// Parked just off the row and translucent at rest; slides in from the right on
+// hover. Transform and opacity only — nothing here touches layout.
+.rowArrow {
+  width: 1.125rem;
+  height: 1.125rem;
+  color: $accent;
+
+  opacity: 0;
+  transform: translateX(-0.5rem);
+  transition:
+    opacity 300ms $ease-out-expo,
+    transform 300ms $ease-out-expo;
+}
+
+.row:hover .rowArrow,
+.row:focus-visible .rowArrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+// Tier 3 — supporting evidence. Full-width dark cards, stacked: they span the
+// record column so the tier reads as a block of its own rather than as loose
+// chips trailing off the ledger.
+.credentials {
+  margin-top: 2.75rem;
+}
+
+.credentialsLabel {
+  display: block;
+  margin-bottom: 1rem;
+
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $muted;
+}
+
+// Three abreast, equal tracks: one line of short cards spanning the record
+// column, so the tier reads as a footer to the ledger rather than a second list.
+.credentialList {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+
+  list-style: none;
+}
+
+// BorderGlow's wrapper, stripped back to the halo alone.
+//
+// Three things were fighting for the card's edge: the stock white hairline, the
+// ::before mesh-gradient border (a conic-masked arc, which is what read as the
+// "weird" flicker), and the halo itself. Two of them go. The ::after interior
+// fill goes with them — it stains the card rather than lighting it. What's left
+// is .edge-light: the glow, and nothing else.
+:global(.border-glow-card).credentialCard {
+  height: 100%;
+  border: none;
+  box-shadow: none;
+
+  &::before,
+  &::after {
+    display: none;
+  }
+}
+
+// Hovering any card clears the loop on all three, so the only light in the tier
+// is the one under the cursor. On release the rule stops matching, the animation
+// is applied fresh to all three at once, and they restart from 0% together —
+// which is what keeps them in phase. (Letting them keep running and merely
+// pausing would leave them scattered across the timeline on the next hover.)
+//
+// `:has(.credentialCard:hover)` rather than `.credentialList:hover`: the list's
+// box includes the gaps between cards, and crossing a gap shouldn't count as
+// touching a card.
+//
+// The hovered card would stop its own loop anyway — BorderGlow.css does that,
+// and it must, or the keyframes and the pointer would both write --cursor-angle
+// and the animation would win the cascade.
+.credentialList:has(.credentialCard:hover) :global(.border-glow-card.sweeping) {
+  animation: none;
+}
+
+.credentialLink {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+
+  height: 100%;
+  // Comfortably past the 44px minimum target.
+  min-height: 5.5rem;
+  padding: 1rem;
+
+  color: $color-light;
+}
+
+// Title and icon share the top line; the description sits beneath both.
+.credentialText {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.credentialTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+// Half voice: it explains, it does not announce.
+.credentialDescription {
+  font-size: 0.775rem;
+  line-height: 1.4;
+  color: color-mix(in srgb, #{$color-light} 62%, transparent);
+}
+
+.credentialIcon {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+  // The mint reads on the dark card, where the deep accent would disappear.
+  color: $color-primary;
+
+  opacity: 0.7;
+  transition:
+    opacity 300ms $ease-out-expo,
+    transform 300ms $ease-out-expo;
+}
+
+.credentialCard:hover .credentialIcon {
+  opacity: 1;
+  transform: translate(0.15rem, -0.15rem);
+}
+
+// The download arrow travels down, not up-and-out.
+.credentialCard:hover .credentialLink[download] .credentialIcon {
+  transform: translateY(0.15rem);
+}
+
+.credentialLink:focus-visible {
+  outline: 2px solid $color-primary;
+  outline-offset: 2px;
+  border-radius: 12px;
+}
+
+@media (max-width: 64rem) {
+  .about {
+    grid-template-columns: 1fr;
+    gap: $gutter;
+    padding-inline: 1.5rem;
+  }
+
+  // Nothing to stick against once the columns stack.
+  .statement {
+    position: static;
+  }
+
+  // Logo | text | arrow. The logo and the arrow each span the full height of the
+  // stacked text so they stay centred against it.
+  .ledger {
+    margin-inline: 0;
+  }
+
+  .row {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    row-gap: 0.25rem;
+    column-gap: 1rem;
+    padding-inline: 0;
+  }
+
+  .rowLogo {
+    grid-row: 1 / -1;
+  }
+
+  .period,
+  .role,
+  .company {
+    grid-column: 2;
+  }
+
+  .rowArrow {
+    grid-column: 3;
+    grid-row: 1 / -1;
+  }
+
+  // Three abreast only holds while the column is wide; below that the cards go
+  // narrower than their own titles.
+  .credentialList {
+    grid-template-columns: 1fr;
+  }
+}

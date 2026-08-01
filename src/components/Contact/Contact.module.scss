@@ -1,0 +1,661 @@
+@use "../../styles/variables" as *;
+
+$ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+
+// On the near-black section the deep accent disappears, so the mint is the
+// accent here — the same inversion the credential cards make. Both tones run
+// brighter than elsewhere on the site: against the ink, mixes that read as
+// "muted" on paper read as barely-there.
+$line: color-mix(in srgb, #{$color-light} 30%, transparent);
+$muted: color-mix(in srgb, #{$color-light} 74%, transparent);
+
+.contact {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
+  display: grid;
+  place-items: center;
+  min-height: 100dvh;
+  // Top padding is exactly the nav, bottom is zero: the grid then centres the
+  // content in the true resting space between the nav's lower edge and the end
+  // of the section, not in that space minus an arbitrary gutter.
+  padding: $nav-height $gutter 0;
+
+  background-color: $color-dark;
+  color: $color-light;
+}
+
+// The dot field fills the section behind the content. Inert: it reacts to the
+// pointer through a window listener, so it never needs to catch events itself,
+// and swallowing them would break the form sitting on top of it.
+//
+// Named `.canvas`, not `.field` — that name belongs to the form fields below,
+// and CSS Modules would happily apply both rule sets to both elements.
+.canvas {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+// The field doesn't stop at the section's edges, it dissolves into them: a wash
+// of the section's own ink at the top and the bottom, so the dots come up out
+// of the ink and sink back into it. Cut off flat, the grid ends mid-row and
+// each seam reads as two surfaces meeting rather than one floor.
+//
+// Both washes on one pseudo-element, as two backgrounds pinned to their own
+// edges — a second element would only exist to hold a second gradient. Same
+// negative layer as the canvas and later in the DOM, so they paint over the
+// dots and under the content without needing a stacking rule of their own.
+.contact::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+
+  background:
+    linear-gradient(to bottom, $color-dark 8%, transparent) top / 100%
+      clamp(7rem, 16vh, 13rem) no-repeat,
+    linear-gradient(to top, $color-dark 8%, transparent) bottom / 100%
+      clamp(7rem, 16vh, 13rem) no-repeat;
+  pointer-events: none;
+}
+
+.inner {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: $gutter * 1.5;
+  // The pitch is shorter than the form; centred against it, the pair reads as
+  // one balanced composition instead of two columns hung from a clothesline.
+  align-items: center;
+
+  width: 100%;
+  max-width: 72rem;
+}
+
+.statement {
+  display: flex;
+  flex-direction: column;
+}
+
+.heading {
+  font-size: clamp(1.75rem, 3vw, 2.75rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.lead {
+  margin-top: 1.25rem;
+  max-width: 38ch;
+
+  font-size: 1rem;
+  line-height: 1.6;
+  color: $muted;
+}
+
+// Not a contact-card list: the address at reading size with the city as a
+// dateline beneath it — the alternative to the form, stated once, plainly.
+.details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+
+  margin-top: 2.75rem;
+}
+
+// The address and its copy button on one line. Baseline-aligned rather than
+// centred: the button's label is much smaller than the address, and centring two
+// type sizes leaves the small one floating off the line the eye is reading.
+.emailRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+// The mark alone. A button element with no reset carries the UA's `buttonface`
+// fill and border — that was the white slab; every button in this file drops
+// both, and this one is no exception.
+//
+// Sized as a square target that the icon sits centred in, with the icon itself
+// well inside it: the extra room is what makes a 16px mark clickable without
+// making it look like a 40px control. Radius on the box only ever shows in the
+// hover and focus states.
+.copy {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 2.25rem;
+  height: 2.25rem;
+  // Bleed the square back out of the text row so it takes only the space the
+  // mark needs, and the address's baseline is unaffected by the target's size.
+  margin: -0.65rem -0.55rem;
+
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: $muted;
+  cursor: pointer;
+
+  transition:
+    color 220ms $ease-out-expo,
+    background-color 220ms $ease-out-expo;
+
+  &:hover {
+    color: $color-primary;
+    // The faintest wash, and the only reason it exists: with no label and no
+    // border, the mark needs something under the cursor confirming it is a
+    // control and not an ornament printed next to the address.
+    background-color: color-mix(in srgb, #{$color-primary} 9%, transparent);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 2px;
+    color: $color-primary;
+  }
+
+  // Held for as long as the confirmation lasts, then released on its own. The
+  // colour is the whole message now that there is no word to change: mint, and
+  // the mark itself is a check.
+  &[data-copied="true"] {
+    color: $color-primary;
+  }
+}
+
+.copyIcon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+// The confirmation, for anyone who can't see the mark change. Same technique as
+// the honeypot below, opposite intent: present to assistive tech, absent to the
+// eye.
+.copySr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+// The one place in the section where the mint is used as a link colour: this is
+// the escape hatch for anyone who would rather not use a form at all.
+.emailLink {
+  font-size: 1.125rem;
+  color: $color-primary;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, #{$color-primary} 35%, transparent);
+  text-underline-offset: 0.3em;
+  transition: text-decoration-color 200ms $ease-out-expo;
+
+  &:hover {
+    text-decoration-color: currentColor;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+}
+
+.location {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $muted;
+}
+
+// The pane of glass the form sits on. Not decorative frosting: the dot field
+// behind it is live texture, and the blur smears it into a soft mint haze that
+// exists nowhere else in the section — the panel reads as material because
+// something real is visibly behind it. One pane for the whole form; the fields
+// inside stay lines.
+//
+// 1rem continues the card radius scale (logo tiles 8px, credential cards 12px)
+// for the largest card on the site. The pill button inside doesn't constrain
+// it: concentric-radius math only binds elements that hug the corners.
+.formWrap {
+  position: relative;
+  padding: clamp(1.75rem, 3.5vw, 2.75rem);
+  border-radius: 1rem;
+
+  // A clean window, not frosted glass: the dots stay plainly visible through
+  // the pane, just taken slightly out of focus so the fields in front hold the
+  // eye. Transparency is the material; the blur is only a hint.
+  // Unprefixed only, same as the nav: Lightning CSS owns vendor prefixing.
+  backdrop-filter: blur(0.5px);
+  // The faintest film on the pane — enough to declare a surface, not enough to
+  // fog what's behind it.
+  background: color-mix(in srgb, #{$color-light} 3%, transparent);
+  // The shadow seats the pane on the ink so it floats above the dots, not
+  // among them.
+  box-shadow: 0 32px 64px -32px rgb(0 0 0 / 0.55);
+}
+
+// The edge, drawn as light rather than as an outline: a hairline ring whose
+// gradient is bright where the light enters (top left), almost nothing along
+// the shaded sides, and a faint return glint at the bottom right. A uniform
+// border here reads as a box; an uneven one reads as a cut edge.
+.formWrap::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, #{$color-light} 45%, transparent),
+    color-mix(in srgb, #{$color-light} 12%, transparent) 28%,
+    color-mix(in srgb, #{$color-light} 9%, transparent) 70%,
+    color-mix(in srgb, #{$color-light} 25%, transparent)
+  );
+  // Two full-size masks, content-box against border-box, excluded against each
+  // other: only the 1px ring between them survives.
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+}
+
+// Without the blur the near-transparent tint reads as a smudge, not glass; a
+// denser fill keeps the panel legible where backdrop-filter isn't supported.
+@supports not (backdrop-filter: blur(1px)) {
+  .formWrap {
+    background: color-mix(in srgb, #{$color-light} 8%, transparent);
+  }
+}
+
+// The form. The pane is the only box: every field is still a line, the same
+// hairline language as the About ledger. A boxed input inside the glass would
+// read as a widget dropped on top of the page; a rule reads as part of it.
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.75rem;
+}
+
+.field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  // Brighter than the section's muted tone: on the lifted glass the labels are
+  // the field names being read mid-typing, not secondary captions.
+  color: color-mix(in srgb, #{$color-light} 90%, transparent);
+
+  transition: color 250ms $ease-out-expo;
+}
+
+.input {
+  width: 100%;
+  padding: 0.5rem 0 0.75rem;
+
+  border: 0;
+  background: transparent;
+  color: $color-light;
+
+  font: inherit;
+  font-size: 1rem;
+
+  // The rule below is the field's edge and its focus ring both; a browser
+  // outline on top of it would be a second, uglier line saying the same thing.
+  outline: none;
+  resize: none;
+
+  &::placeholder {
+    color: color-mix(in srgb, #{$color-light} 45%, transparent);
+  }
+
+  // Words the browser thinks are misspelled. It repaints them through the
+  // spelling-error highlight, and that highlight does not inherit the field's
+  // colour — left alone it falls back to the UA default, near-black, which on
+  // this dark pane means a typo makes the word disappear. Restated here so a
+  // flagged word keeps the same colour as every other word; the red wavy rule
+  // underneath is what marks it, which is all it should ever have been.
+  &::spelling-error,
+  &::grammar-error {
+    color: $color-light;
+    -webkit-text-fill-color: $color-light;
+  }
+
+  // Autofilled fields. Chrome paints its own opaque background and its own dark
+  // text straight over anything declared above — on this dark glass that came
+  // out as a white slab with a saved name in it, nothing like a field the
+  // visitor typed into themselves.
+  //
+  // The background can't simply be overridden: it isn't the element's
+  // background, and the usual `box-shadow: inset` answer only replaces it with a
+  // different opaque colour, which the pane can't have. What Chrome does honour
+  // is the transition — the fill is animated in, so a delay measured in years
+  // means it is never applied at all and the field stays transparent. The text
+  // colour is a separate override, since `color` alone doesn't reach it.
+  //
+  // Both selectors on purpose: `:autofill` is the standard, `:-webkit-autofill`
+  // is what the Chromium versions in the field still answer to.
+  &:autofill,
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover,
+  &:-webkit-autofill:focus {
+    -webkit-text-fill-color: $color-light;
+    caret-color: $color-light;
+    transition: background-color 100000s ease-in-out 0s;
+
+    // Firefox tints autofilled fields with a filter rather than a background,
+    // so the transition trick never reaches it. This is the whole fix there.
+    filter: none;
+  }
+}
+
+// Two lines in one: the resting hairline, and an accent that wipes across it
+// from the left on focus. Transform only, so the field can't shift as it lights.
+.rule {
+  position: relative;
+  display: block;
+  height: 1px;
+  background: $line;
+
+  transition: background-color 250ms $ease-out-expo;
+}
+
+.rule::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background: $color-primary;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 450ms $ease-out-expo;
+}
+
+.field:focus-within .rule::after {
+  transform: scaleX(1);
+}
+
+.field:focus-within .label {
+  color: $color-light;
+}
+
+// Invalid: the rule turns, so the field carries its own state. The message says
+// what to do about it — colour alone is never the signal.
+.field:has([aria-invalid="true"]) .rule {
+  background: color-mix(in srgb, #{$color-primary} 30%, #{$color-light});
+}
+
+.error {
+  display: block;
+  overflow: hidden;
+
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: color-mix(in srgb, #{$color-light} 88%, transparent);
+}
+
+.honeypot {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.submitRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+
+  margin-top: 0.5rem;
+}
+
+// Same pill as the nav's CTA, deliberately: the button that ends the journey is
+// the one that started it.
+:global(.border-glow-card).submitGlow {
+  border: 1px solid color-mix(in srgb, currentColor 42%, transparent);
+  background: transparent;
+  box-shadow: none;
+  transition: border-color 250ms $ease-out-expo;
+
+  &:hover {
+    border-color: color-mix(in srgb, currentColor 12%, transparent);
+  }
+
+  &::before,
+  &::after {
+    display: none;
+  }
+
+  :global(.edge-light)::before {
+    box-shadow:
+      inset 0 0 0 1px var(--glow-color),
+      inset 0 0 2px 0 var(--glow-color-50),
+      inset 0 0 5px 0 var(--glow-color-30),
+      0 0 2px 0 var(--glow-color-60),
+      0 0 7px 1px var(--glow-color-40),
+      0 0 14px 2px var(--glow-color-30),
+      0 0 24px 3px var(--glow-color-10);
+  }
+}
+
+.submit {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+
+  padding: 0.75rem 1.75rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+
+  font: inherit;
+  font-size: 0.95rem;
+  white-space: nowrap;
+
+  &:disabled {
+    cursor: progress;
+    opacity: 0.7;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 4px;
+    border-radius: 999px;
+  }
+}
+
+// Three dots that fill in while the request is in flight. The button holds its
+// width (the label is the longer string), so nothing around it moves.
+.dots::after {
+  content: "";
+  animation: contact-dots 1.2s steps(4, end) infinite;
+}
+
+@keyframes contact-dots {
+  0% {
+    content: "";
+  }
+  25% {
+    content: ".";
+  }
+  50% {
+    content: "..";
+  }
+  75% {
+    content: "...";
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dots::after {
+    animation: none;
+    content: "...";
+  }
+}
+
+.failed {
+  flex: 1;
+  min-width: 16rem;
+
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: color-mix(in srgb, #{$color-light} 88%, transparent);
+}
+
+// Success. The form is replaced rather than merely captioned: leaving the empty
+// fields sitting there invites a second send and quietly asks "did that work?"
+// The two states of the pane, stacked in one cell. The form holds the height
+// even while the confirmation is the thing being shown.
+.stack {
+  display: grid;
+}
+
+.stack > * {
+  grid-area: 1 / 1;
+  min-width: 0;
+}
+
+// Out of sight but not out of the layout — `display: none` or unmounting would
+// take the height with it. Pointer events go too: an invisible form under the
+// confirmation would still catch clicks meant for it.
+.form[data-hidden] {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+// Centred in the height the form left behind, rather than stranded at the top
+// of it. Left-aligned inside, like every other block of copy on the page.
+.sent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+
+  padding: 0.5rem 0;
+}
+
+.sentMark {
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-bottom: 1.75rem;
+  color: $color-primary;
+}
+
+// The ring is the quiet half of the mark: it encloses, the check states. At full
+// strength the two compete and the whole thing reads as a badge.
+.sentRing {
+  color: color-mix(in srgb, #{$color-primary} 34%, transparent);
+}
+
+.sentTitle {
+  font-size: clamp(1.4rem, 2vw, 1.7rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.sentBody {
+  margin-top: 0.75rem;
+  max-width: 32ch;
+
+  font-size: 1rem;
+  line-height: 1.65;
+  color: $muted;
+}
+
+// The rule does the separating, so the button beneath it needs no border of its
+// own. Full width of the pane's content: a short rule under a short line of text
+// reads as an underline, a full one reads as a division.
+.againRow {
+  align-self: stretch;
+  margin-top: 2.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid $line;
+}
+
+.again {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: $muted;
+  cursor: pointer;
+
+  font: inherit;
+  font-size: 0.85rem;
+  text-decoration: underline;
+  text-decoration-color: $line;
+  text-underline-offset: 0.25em;
+
+  transition:
+    color 200ms $ease-out-expo,
+    text-decoration-color 200ms $ease-out-expo;
+
+  &:hover {
+    color: $color-light;
+    text-decoration-color: currentColor;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+}
+
+@media (max-width: 64rem) {
+  // Stacked, the columns outgrow the viewport and the section scrolls — exact
+  // centring stops meaning anything, and the form needs room off the bottom.
+  .contact {
+    padding: calc(#{$nav-height} + #{$gutter}) 1.5rem $gutter;
+  }
+
+  .inner {
+    grid-template-columns: 1fr;
+    gap: $gutter;
+  }
+
+  // The form is the point of the section on a phone; the pitch above it should
+  // not eat the whole first screen.
+  .details {
+    margin-top: 1.75rem;
+  }
+}
+
+@media (max-width: 40rem) {
+  .row {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+
+  // On a phone the section gutter is already slim; the pane gives back most of
+  // its inset so the fields keep their width.
+  .formWrap {
+    padding: 1.5rem 1.25rem;
+  }
+}

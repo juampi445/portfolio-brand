@@ -1,0 +1,201 @@
+{
+  "meta": {
+    "title": "Cuadrelli — Juan Pablo Cuadrelli",
+    "description": "Estudio de una sola persona. Sitios web para negocios que necesitan verse consolidados desde la primera pantalla."
+  },
+  "nav": {
+    "projects": "Proyectos",
+    "services": "Servicios",
+    "about": "Sobre mí",
+    "contact": "Contacto",
+    "cta": "Hablemos",
+    "name": "Juan Cuadrelli",
+    "switchLanguage": "Cambiar a inglés",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "menuLabel": "Secciones del sitio"
+  },
+  "hero": {
+    "kicker": "Estudio de una sola persona",
+    "headline": "Diseño y construyo",
+    "words": [
+      "sitios web",
+      "tiendas online",
+      "landing pages",
+      "rediseños"
+    ],
+    "tagline": "Para negocios que necesitan verse consolidados desde la primera pantalla.",
+    "cta": "Empecemos tu proyecto"
+  },
+  "heroSecondary": {
+    "stages": [
+      ["Idea", "Investigación", "Estrategia", "Concepto", "Planificación"],
+      ["Diseño", "Identidad", "UI", "UX", "Animación", "Detalle"],
+      ["React", "Next.js", "TypeScript", "Performance", "SEO", "Accesibilidad"],
+      ["Lanzamiento", "Conversión", "Crecimiento", "Escala", "Impacto"]
+    ]
+  },
+  "projects": {
+    "title": "Proyectos",
+    "heading": "Sitios para clientes y proyectos propios.",
+    "items": {
+      "nerva-studio": {
+        "outcome": "E-commerce de moda de punta a punta: tienda con filtros dinámicos, carrito y checkout funcionales, y un panel de administración completo.",
+        "tags": [
+          "E-commerce",
+          "Panel de admin",
+          "UX/UI"
+        ]
+      },
+      "quintana": {
+        "outcome": "E-commerce de muebles de alta gama: presentación de producto a nivel galería para piezas que se venden por su factura.",
+        "tags": [
+          "E-commerce",
+          "Dirección de arte",
+          "Mobiliario"
+        ]
+      },
+      "rocketly": {
+        "outcome": "Sitio para un estudio de software: servicios, visión y credibilidad técnica para un equipo que entrega.",
+        "tags": [
+          "Sitio corporativo",
+          "Posicionamiento",
+          "B2B"
+        ]
+      },
+      "void-strikers": {
+        "outcome": "Juego de acción 2D propio: prueba de que construyo cosas interactivas, no solo páginas.",
+        "tags": [
+          "Videojuego",
+          "Canvas y físicas",
+          "I+D"
+        ]
+      },
+      "lol-champions": {
+        "outcome": "App intensiva en datos: filtros avanzados y fichas con video sobre un catálogo de juego en vivo.",
+        "tags": [
+          "Web app",
+          "Datos y filtros",
+          "API"
+        ]
+      }
+    }
+  },
+  "services": {
+    "title": "Servicios",
+    "heading": "Mis proyectos suelen tener una de estas formas.",
+    "lead": "Alcance fijo, plazo honesto, hecho para durar.",
+    "includedLabel": "Incluye",
+    "items": {
+      "landing": {
+        "title": "Landing pages",
+        "tag": "Una oferta, una página",
+        "lead": "Una sola página con un único objetivo: convertir a quien la visita en un contacto o una venta.",
+        "included": [
+          "Todo apunta a una sola acción",
+          "Carga en menos de un segundo en cualquier teléfono",
+          "Métricas y seguimiento conectados desde el primer día"
+        ],
+        "timeline": "En línea en 1 a 2 semanas"
+      },
+      "events": {
+        "title": "Sitios para eventos",
+        "tag": "Para toda la ocasión",
+        "lead": "Un solo link que acompaña el evento, desde el primer save the date hasta la mañana del gran día.",
+        "included": [
+          "RSVP y lista de invitados, resueltos en el sitio",
+          "Diseñado a juego con tus invitaciones",
+          "Cronograma, cómo llegar y novedades en un solo lugar"
+        ],
+        "timeline": "En línea en 2 a 3 semanas"
+      },
+      "professional": {
+        "title": "Sitios profesionales",
+        "tag": "Tu presencia completa",
+        "lead": "El sitio completo para un nombre que tiene que verse establecido desde la primera pantalla.",
+        "included": [
+          "Diseñado sobre tu identidad, nunca una plantilla",
+          "Contenido que actualizás vos mismo",
+          "Preparado para buscadores, y bilingüe cuando lo necesites"
+        ],
+        "timeline": "En línea en 3 a 4 semanas"
+      }
+    },
+    "cta": {
+      "question": "¿Necesitás algo fuera de estas tres?",
+      "action": "Definámoslo juntos."
+    }
+  },
+  "about": {
+    "title": "Sobre mí",
+    "heading": "Trabajás directamente con la persona que escribe el código.",
+    "lead": [
+      "Soy Juan Pablo Cuadrelli, y esto es un estudio de una sola persona.",
+      "Hablás con el desarrollador que construye tu sitio, no con un ejecutivo de cuentas que pasa mensajes.",
+      "El trabajo es para negocios que necesitan verse consolidados desde la primera pantalla."
+    ],
+    "ledger": {
+      "rocketly": {
+        "period": "6 meses",
+        "role": "Cofundador, Desarrollador Full Stack"
+      },
+      "noswar": {
+        "period": "2 años",
+        "role": "Desarrollador Frontend, Líder Técnico"
+      },
+      "minimalart": {
+        "period": "+1 año",
+        "role": "Desarrollador Frontend"
+      }
+    },
+    "credentialsLabel": "Credenciales",
+    "credentials": {
+      "henry": {
+        "title": "Henry Full Stack",
+        "description": "Desarrollo web full stack, más de 800 horas"
+      },
+      "efset": {
+        "title": "EF SET C1",
+        "description": "Inglés avanzado certificado"
+      },
+      "cv": {
+        "title": "Descargar CV",
+        "description": "Trayectoria y stack completos, PDF"
+      }
+    }
+  },
+  "contact": {
+    "title": "Contacto",
+    "heading": "Contame qué estás construyendo.",
+    "lead": "Con una o dos frases alcanza para empezar. Leo todos los mensajes y respondo dentro del día.",
+    "email": "jpcuadrelli@gmail.com",
+    "location": "Tandil, Argentina",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "form": {
+      "name": "Nombre",
+      "email": "Email",
+      "message": "Mensaje",
+      "messagePlaceholder": "Una tienda, una landing, rehacer algo que quedó viejo…",
+      "submit": "Enviar mensaje",
+      "sending": "Enviando",
+      "errors": {
+        "name": "Tu nombre, así sé a quién le respondo.",
+        "email": "Esa dirección no parece válida. Necesito una para poder contestarte.",
+        "message": "Contame algo del proyecto.",
+        "failed": "El mensaje no se envió. Probá de nuevo, o escribime directamente a jpcuadrelli@gmail.com."
+      },
+      "successTitle": "Mensaje enviado.",
+      "successBody": "Ya está en mi bandeja. Te respondo dentro del día.",
+      "again": "Enviar otro"
+    }
+  },
+  "footer": {
+    "tagline": "Sitios para negocios que necesitan verse establecidos desde la primera pantalla.",
+    "colophon": "Diseñado y construido en Tandil, Argentina.",
+    "sectionsLabel": "Secciones",
+    "directLabel": "Contacto directo",
+    "linkedin": "LinkedIn",
+    "backToTop": "Volver arriba"
+  }
+}

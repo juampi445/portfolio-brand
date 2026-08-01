@@ -1,0 +1,53 @@
+@use "../../styles/variables" as *;
+
+.heroSecondary {
+  display: flex;
+  min-height: 100dvh;
+
+  // Clear the fixed nav, then leave the same breathing room at the bottom.
+  padding-block: calc(#{$nav-height} + #{$gutter}) $gutter;
+
+  background-color: $color-primary;
+  color: $color-dark;
+
+  // The marquee rows run full-bleed; the section is only ever the circle's
+  // interior, so anything wider than the viewport just gets clipped away.
+  overflow: hidden;
+}
+
+// ScrollVelocity's own wrapper. Stretch it across the padded box and spread the
+// four rows evenly, so the block fills nav-to-bottom regardless of line count.
+.heroSecondary > section {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.line {
+  font-size: clamp(2rem, 6vw, 5.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+// A drawn dot rather than a "•" glyph: at this size the typographic bullet is
+// a blob whose weight and vertical placement change with the font. This one is
+// sized off the type, sits on the optical centre of the caps, and takes the
+// deep mint so it punctuates without competing with the ink.
+.separator {
+  display: inline-block;
+  width: 0.13em;
+  height: 0.13em;
+  margin-inline: 0.42em;
+
+  // Caps have no descender, so the true optical centre sits above the
+  // half-em mark. Nudge up rather than relying on vertical-align: middle.
+  vertical-align: 0.22em;
+
+  background-color: $color-accent;
+  border-radius: 50%;
+}

@@ -1,0 +1,44 @@
+/* Mechanics only. Visuals for the cards live with whatever section mounts them
+   (here: Services.module.scss via the itemClassName), so the stack can inherit
+   each section's palette instead of shipping its own look.
+
+   Tuned for useWindowScroll: the page is the scroll container, so the scroller
+   is a plain passthrough — no nested overflow, no forced height. */
+
+.scroll-stack-scroller {
+  position: relative;
+  width: 100%;
+}
+
+.scroll-stack-inner {
+  /* Headroom so the first card can reach its pin — and the reason it is more
+     than a token 2rem: the first card's stacking trigger sits a stackPosition
+     above the card's own top, so with too little headroom that trigger lands
+     above the stack itself, and jumping to card one has to scroll out the top
+     of the section to reach it. Every pixel here is a pixel that trigger moves
+     back down. Scales with the viewport because the trigger does too.
+     The tail is the load-bearing
+     one: the last card stays pinned until it releases against .scroll-stack-end,
+     and while pinned it hangs a full card-height below the pin line. Without
+     enough clearance below the spacer, that still-pinned card overlaps the next
+     section. This is that clearance — roughly a card's worth, so the pile has
+     released and scrolled clear before About arrives. */
+  padding: clamp(3rem, 9vh, 6.5rem) 0 clamp(16rem, 42vh, 28rem);
+}
+
+.scroll-stack-card {
+  position: relative;
+  box-sizing: border-box;
+
+  /* The transform stack the JS drives every frame. transform itself, plus the
+     margin between cards, is written inline per-card. */
+  transform-origin: top center;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform, filter;
+}
+
+.scroll-stack-end {
+  width: 100%;
+  height: 1px;
+}

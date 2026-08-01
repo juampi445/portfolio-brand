@@ -1,0 +1,91 @@
+@use "../../styles/variables" as *;
+
+// currentColor throughout, so the toggle inverts with the nav's two colour
+// layers exactly like the links and the logo pill do.
+.toggle {
+  position: relative;
+  isolation: isolate;
+
+  display: grid;
+  grid-auto-flow: column;
+  // Equal tracks: the thumb is exactly one track wide, so its travel is a clean
+  // 100% and never needs measuring.
+  grid-auto-columns: 1fr;
+  align-items: center;
+
+  padding: 0.25rem;
+  // Same subtle hairline as the CTA, held in every nav state (see the CTA note
+  // in Nav.module.scss) so the two action controls read as a consistent pair.
+  border: 1px solid color-mix(in srgb, currentColor 28%, transparent);
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+
+  font: inherit;
+
+  transition:
+    border-color 250ms ease-out,
+    transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  // A touch brighter on hover — the accent thumb is already the loud element, so
+  // the hairline only nudges. No bg-lighting glow here, so it brightens rather
+  // than fading the way the CTA's does.
+  &:hover {
+    border-color: color-mix(in srgb, currentColor 42%, transparent);
+  }
+
+  // The click lands on the whole control, so the whole control acknowledges it.
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 3px;
+  }
+}
+
+// Slides under the active locale. Sits behind the labels, hence the -1.
+.thumb {
+  position: absolute;
+  z-index: -1;
+  top: 0.25rem;
+  bottom: 0.25rem;
+  left: 0.25rem;
+  width: calc(50% - 0.25rem);
+
+  border-radius: 999px;
+  background: $color-primary;
+}
+
+.option {
+  padding: 0.3rem 0.6rem;
+
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-align: center;
+
+  // The inactive locale is legible but recessive: it is a destination, not a
+  // label competing with the one you are in.
+  color: inherit;
+  opacity: 0.45;
+  transition:
+    color 250ms ease-out,
+    opacity 250ms ease-out;
+
+  // Sitting on the accent thumb, which is the same mint in both nav layers, so
+  // the text on it is pinned dark rather than inheriting the layer's colour —
+  // light-on-mint would drop to ~1.5:1.
+  &[data-active="true"] {
+    color: $color-dark;
+    opacity: 1;
+  }
+}
+
+// Hovering the control lifts the *other* locale toward legibility — a preview of
+// where the click goes, without moving anything.
+.toggle:hover .option[data-active="false"] {
+  opacity: 0.75;
+}

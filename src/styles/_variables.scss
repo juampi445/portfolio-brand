@@ -1,0 +1,29 @@
+// Base color palette
+// Swap these values to test different palettes without touching component files.
+
+$color-primary: #47D7B5;
+$color-primary-light: #D6F5EE;
+$color-dark: #111111;
+$color-light: #ECECEC;
+
+// The brand mint sunk into the ink. The mint itself is far too light to read on
+// pale surfaces (~1.6:1 on $color-primary-light); this keeps the hue but gives
+// it enough weight to act as an accent on light backgrounds.
+$color-accent: #286456;
+
+// Layout
+// Shared so sections can lay out against the fixed nav without guessing.
+$nav-height: 7.5rem;
+
+// The bar itself only, below 48rem. 7.5rem is 120px, which on a 667px phone
+// pushes the controls a sixth of the way down the screen and leaves the bar
+// looking mis-set against its own contents. The sections keep padding by the
+// full $nav-height — the surplus reads as breathing room at the top of a
+// section, never as a collision.
+$nav-height-mobile: 5rem;
+
+$gutter: 4rem;
+
+// Nav insets are deeper than the page gutter, to pull the logo and the CTA in
+// off the edges and closer to the centre group.
+$nav-inset: 8rem;

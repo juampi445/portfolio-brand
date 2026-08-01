@@ -1,0 +1,165 @@
+@use "../../styles/variables" as *;
+
+$ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+
+// The composition's own box: sized and self-contained, placed by whatever lays
+// it out (the hero grid puts it in the right column). The plates are grid items
+// all sharing one cell, then each is nudged to its own spot on the diagonal —
+// depth comes from scale / opacity / blur, not a pile.
+.stack {
+  position: relative;
+  z-index: 0;
+
+  display: grid;
+  place-items: center;
+
+  width: min(34rem, 100%);
+  aspect-ratio: 5 / 4;
+}
+
+// One soft radial teal bloom, low and wide, sitting behind everything.
+.glow {
+  position: absolute;
+  z-index: 0;
+  inset: 2% -6% -2% -6%;
+
+  background: radial-gradient(
+    46% 42% at 58% 52%,
+    color-mix(in srgb, #{$color-primary} 42%, transparent),
+    transparent 72%
+  );
+  filter: blur(64px);
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+// All layers share the one grid cell; the inline translate offsets them.
+.layer {
+  grid-area: 1 / 1;
+  place-self: center;
+}
+
+.parallax {
+  will-change: transform;
+}
+
+// The plate carries the tilt, float, scale and depth (opacity + blur, set
+// inline per layer). will-change keeps the compositor on transform/opacity.
+.plate {
+  will-change: transform;
+}
+
+// A pane of dark glass. Thin low-opacity rim, a refined (not heavy) drop, and a
+// faint inner highlight along the top edge so it catches a little light.
+.mockup {
+  display: flex;
+  flex-direction: column;
+
+  width: min(30rem, 34vw);
+  aspect-ratio: 16 / 10;
+
+  border-radius: 19px;
+  border: 1px solid color-mix(in srgb, #{$color-light} 10%, transparent);
+  overflow: hidden;
+
+  background: color-mix(in srgb, #{$color-dark} 72%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #{$color-light} 12%, transparent),
+    0 22px 50px -24px rgb(0 0 0 / 0.5),
+    0 8px 18px -12px rgb(0 0 0 / 0.35);
+
+  transition:
+    border-color 420ms $ease-out-quint,
+    box-shadow 420ms $ease-out-quint;
+}
+
+// Hover changes the light on the plate, never its size: a deeper drop, the rim
+// picking up, and one soft mint bloom underneath. Nothing scales, so a plate
+// under the cursor stays exactly where the eye left it.
+@media (hover: hover) {
+  .plate:hover .mockup {
+    border-color: color-mix(in srgb, #{$color-light} 22%, transparent);
+
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, #{$color-light} 18%, transparent),
+      0 30px 64px -26px rgb(0 0 0 / 0.62),
+      0 10px 22px -12px rgb(0 0 0 / 0.42),
+      0 0 44px -12px color-mix(in srgb, #{$color-primary} 24%, transparent);
+  }
+}
+
+// Consistent, understated chrome across all three windows.
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+
+  height: 2rem;
+  flex-shrink: 0;
+  padding-inline: 0.85rem;
+
+  background: color-mix(in srgb, #{$color-light} 4%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, #{$color-light} 7%, transparent);
+}
+
+.lights {
+  display: inline-flex;
+  gap: 0.4rem;
+
+  i {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: color-mix(in srgb, #{$color-light} 18%, transparent);
+  }
+
+  i:nth-child(1) {
+    background: color-mix(in srgb, #ff5f57 78%, transparent);
+  }
+  i:nth-child(2) {
+    background: color-mix(in srgb, #febc2e 78%, transparent);
+  }
+  i:nth-child(3) {
+    background: color-mix(in srgb, #28c840 78%, transparent);
+  }
+}
+
+.address {
+  flex: 1;
+  max-width: 52%;
+  height: 0.72rem;
+
+  border-radius: 999px;
+  background: color-mix(in srgb, #{$color-light} 7%, transparent);
+}
+
+.screen {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  background: color-mix(in srgb, #{$color-dark} 60%, transparent);
+}
+
+// `fill` supplies the absolute inset; this only decides how the screenshot
+// meets a pane of a different ratio — cropped, never stretched.
+.shot {
+  object-fit: cover;
+  object-position: top center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mockup {
+    transition: none;
+  }
+}
+
+// Below the desktop breakpoint the showcase would crowd the headline, so it
+// drops out entirely (and never fetches the screenshots).
+@media (max-width: 64rem) {
+  .stack {
+    display: none;
+  }
+}

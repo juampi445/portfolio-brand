@@ -1,0 +1,407 @@
+@use "../../styles/variables" as *;
+
+$ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+
+// Contact's palette, because this is the same ink floor one step further down.
+// Every tone runs brighter than it would on paper: against near-black, mixes
+// that read as "muted" on the light sections read as barely there. These land
+// at roughly 9:1 and 5.6:1 on $color-dark.
+$muted: color-mix(in srgb, #{$color-light} 74%, transparent);
+$faint: color-mix(in srgb, #{$color-light} 56%, transparent);
+$line: color-mix(in srgb, #{$color-light} 14%, transparent);
+
+// No rule across the top: Contact ends on this same ink and this same field, so
+// a line at the seam would cut one surface into two. The hairline above the
+// baseline row is the only one the footer draws.
+// The horizontal gutter lives here, exactly as it does on Contact, so the pane
+// inside lands on the same 72rem measure as the section above rather than on a
+// grid of its own.
+.footer {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
+  // Tight at the top on purpose: Contact's closing wash already does the work a
+  // gap would, so the space above the pane only has to clear the fade, not
+  // stand in for it.
+  padding: clamp(1.25rem, 2.5vh, 2rem) $gutter clamp(2.5rem, 5vh, 4rem);
+
+  background-color: $color-dark;
+  color: $color-light;
+}
+
+.inner {
+  position: relative;
+
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+}
+
+// The Contact form's pane, reused: the page closes on the surface it made its
+// ask from. A clean window, not frosted glass — transparency is the material
+// and the blur is only a hint.
+// Unprefixed only, same as the nav: Lightning CSS owns vendor prefixing.
+.panel {
+  position: relative;
+  z-index: 1;
+
+  padding: clamp(2rem, 4vw, 3.25rem);
+  border-radius: 1rem;
+
+  backdrop-filter: blur(0.5px);
+  // The faintest film on the pane — enough to declare a surface, not enough to
+  // fog what's behind it.
+  background: color-mix(in srgb, #{$color-light} 3%, transparent);
+  // Seats the pane on the ink so it reads as lifted off it, not cut into it.
+  box-shadow: 0 32px 64px -32px rgb(0 0 0 / 0.55);
+}
+
+// The edge, drawn as light rather than as an outline: a hairline ring whose
+// gradient is bright where the light enters (top left), almost nothing along
+// the shaded sides, and a faint return glint at the bottom right. A uniform
+// border here reads as a box; an uneven one reads as a cut edge.
+.panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+
+  // Contact's ring verbatim: the pane and the form card are the same piece of
+  // glass, and an edge that differed would say they weren't.
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, #{$color-light} 45%, transparent),
+    color-mix(in srgb, #{$color-light} 12%, transparent) 28%,
+    color-mix(in srgb, #{$color-light} 9%, transparent) 70%,
+    color-mix(in srgb, #{$color-light} 25%, transparent)
+  );
+  // Two full-size masks, content-box against border-box, excluded against each
+  // other: only the 1px ring between them survives.
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+}
+
+// Without the blur the near-transparent tint reads as a smudge, not glass; a
+// denser fill keeps the pane legible where backdrop-filter isn't supported.
+@supports not (backdrop-filter: blur(1px)) {
+  .panel {
+    background: color-mix(in srgb, #{$color-light} 8%, transparent);
+  }
+}
+
+// The mark takes the room; the two link columns are narrow and equal. Uneven on
+// purpose — three matching columns would read as a sitemap.
+.columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 34ch;
+}
+
+// With no mark beside it the name has to hold the column alone, so it's set at
+// the sections' own heading scale: a signature at the end of the page rather
+// than a label on it. Full light against the muted prose under it — the widest
+// tonal step in the footer, which is what makes it read as the anchor.
+.name {
+  display: block;
+
+  font-size: clamp(1.5rem, 2.2vw, 2rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  color: $color-light;
+}
+
+// A hairline under the name, mint, at a fixed short measure: the accent drawing
+// a line rather than filling a shape, and the one flourish the footer allows
+// itself. Static — nothing here re-fires or loops.
+.name::after {
+  content: "";
+  display: block;
+  width: 2.25rem;
+  height: 2px;
+  margin-top: 1rem;
+
+  border-radius: 1px;
+  background: $color-primary;
+}
+
+.tagline {
+  margin-top: 1.25rem;
+
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: $muted;
+  text-wrap: pretty;
+}
+
+// Pushed to the foot of the column so it sits level with the last link beside
+// it — the quiet particular at the bottom of the record.
+.colophon {
+  margin-top: auto;
+  padding-top: 1.75rem;
+
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: $faint;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+// The accent naming the structure. Elsewhere on the site these labels sit grey;
+// here they are the mint, because the footer has no headings of its own and the
+// labels are what give the record its columns.
+.columnLabel {
+  margin-bottom: 0.4rem;
+
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $color-primary;
+}
+
+// The nav's underline idiom, one level quieter: it wipes in from the left and
+// keeps going on the way out rather than rewinding. Pure transform, so it can
+// never nudge the label.
+.link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: $muted;
+
+  transition: color 300ms $ease-out-quint;
+
+  &:hover,
+  &:focus-visible {
+    color: $color-light;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 6px;
+    border-radius: 2px;
+  }
+}
+
+// On the section links the rule spans the whole link. On a channel it spans the
+// label only, so it can't run under the icon — see `.channelText`.
+//
+// The `.column >` prefix these carried was a bug: it made the resting rule
+// (three classes) outweigh the hover rule (two), so the section underlines were
+// pinned at scaleX(0) and never drew. Both halves of each pair now sit one
+// pseudo-class apart, which is the only difference that should decide this.
+.link:not(.channel)::after,
+.channelText::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: -0.3rem;
+  height: 1px;
+
+  background: $color-primary;
+
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 400ms $ease-out-quint;
+}
+
+.link:not(.channel):hover::after,
+.link:not(.channel):focus-visible::after,
+.link:hover .channelText::after,
+.link:focus-visible .channelText::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+// The channel rows: icon, label, and for the outbound one an arrow. The icon
+// identifies the channel at a glance, which is the only reason it's there.
+.channel {
+  align-items: center;
+}
+
+.channelText {
+  position: relative;
+}
+
+// Tabular figures so the number can't jitter, and so it sets as a number rather
+// than as a word.
+.number {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+// Clear at rest, mint on contact: the accent is the reward for reaching, not
+// something sitting there spending itself on a row nobody is pointing at.
+.channelIcon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  color: $muted;
+
+  transition: color 300ms $ease-out-quint;
+}
+
+// Optical size, not measured size. A solid glyph puts ink across its whole box
+// while a hairline outline only draws its edge, so at an identical 1rem the two
+// brand marks would out-weigh the envelope beside them. Backing them off a
+// notch is what makes the three read as one row.
+.brandIcon {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+// The other half of the same correction. An envelope is a wide, flat shape: it
+// only ever fills about three fifths of the height of its 24-unit box, while a
+// brand glyph fills the box corner to corner. Matched box for box it therefore
+// reads smaller than its neighbours, so it gets the box that makes the drawn
+// shapes match instead.
+.mailIcon {
+  width: 1.05rem;
+  height: 1.05rem;
+
+  // The envelope also sits 2.75 units in from the left of its viewBox, while
+  // both brand glyphs start hard against theirs. In a left-aligned column that
+  // inset is read as the mail row being indented. Pull the box left by exactly
+  // that inset — 2.75/24 of 1.05rem — and hand the same amount back on the
+  // right, so the drawn edges line up and the label beside it never moves.
+  margin-left: -0.12rem;
+  margin-right: 0.12rem;
+}
+
+.link:hover .channelIcon,
+.link:focus-visible .channelIcon {
+  color: $color-primary;
+}
+
+.outIcon {
+  width: 0.75rem;
+  height: 0.75rem;
+  flex-shrink: 0;
+  margin-left: -0.15rem;
+  color: $faint;
+
+  transition:
+    color 300ms $ease-out-quint,
+    transform 300ms $ease-out-quint;
+}
+
+.link:hover .outIcon,
+.link:focus-visible .outIcon {
+  color: $color-primary;
+  transform: translate(1px, -1px);
+}
+
+// The one rule the footer draws, dividing the record from its notice.
+.baseline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+
+  margin-top: clamp(2.5rem, 6vh, 4rem);
+  padding-top: 1.5rem;
+  border-top: 1px solid $line;
+}
+
+.notice {
+  font-size: 0.78rem;
+  color: $faint;
+  font-variant-numeric: tabular-nums;
+}
+
+// The arrow lifts, the label holds still: the movement is the affordance, and
+// carrying the text with it would just look like the row twitched.
+.top {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: $muted;
+
+  transition: color 300ms $ease-out-quint;
+
+  &:hover,
+  &:focus-visible {
+    color: $color-light;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 6px;
+    border-radius: 2px;
+  }
+}
+
+.upIcon {
+  width: 0.85rem;
+  height: 0.85rem;
+  flex-shrink: 0;
+  color: $color-primary;
+
+  transition: transform 300ms $ease-out-quint;
+}
+
+.top:hover .upIcon,
+.top:focus-visible .upIcon {
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link,
+  .channelIcon,
+  .outIcon,
+  .top,
+  .upIcon,
+  .column > .link:not(.channel)::after,
+  .channelText::after {
+    transition: none;
+  }
+}
+
+// One column below the desktop breakpoint: the three-column record needs the
+// width to stay a record rather than three cramped stacks.
+@media (max-width: 64rem) {
+  .columns {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.5rem;
+  }
+
+  .colophon {
+    margin-top: 0;
+    padding-top: 1.25rem;
+  }
+}
+
+@media (max-width: 48rem) {
+  .footer {
+    padding-inline: 1.5rem;
+  }
+
+  // The pane keeps its edge, but not at the cost of the content's measure.
+  .panel {
+    padding: 1.75rem 1.5rem;
+  }
+}

@@ -1,0 +1,72 @@
+// Scroll distance spent growing the circle, on top of the pinned screen.
+// Raise it to make the reveal slower, lower it to make it snappier.
+$reveal-distance: 120vh;
+
+// Scroll distance the stage stays pinned *after* the circle has fully covered
+// the screen, so the second hero can be taken in before the page moves on.
+$hold-distance: 30vh;
+
+// A clip-path circle radius of 100% resolves to sqrt(w² + h²) / sqrt(2).
+// Reaching the corners needs sqrt(w² + h²) / 2, i.e. 70.71% at any aspect
+// ratio. 75% clears the corners with a little margin.
+$reveal-radius: 75%;
+
+.track {
+  position: relative;
+  height: calc(100dvh + #{$reveal-distance} + #{$hold-distance});
+}
+
+// Zero-layout marker whose height *is* the reveal distance. The script measures
+// it, so the ramp and the hold stay defined here in CSS rather than in JS.
+.ramp {
+  position: absolute;
+  top: 0;
+  width: 0;
+  height: $reveal-distance;
+  pointer-events: none;
+}
+
+.stage {
+  --reveal: 0;
+
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.base,
+.overlay {
+  position: absolute;
+  inset: 0;
+
+  // Each layer is its own stacking context. Without this, a z-index inside the
+  // base content (a title, a WebGL canvas) escapes to the stage and can outrank
+  // the overlay entirely, punching through the circle.
+  isolation: isolate;
+}
+
+.overlay {
+  clip-path: circle(calc(var(--reveal) * #{$reveal-radius}) at 50% 50%);
+  will-change: clip-path;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track,
+  .stage {
+    height: auto;
+  }
+
+  .stage {
+    position: static;
+  }
+
+  .base,
+  .overlay {
+    position: static;
+  }
+
+  .overlay {
+    clip-path: none;
+  }
+}

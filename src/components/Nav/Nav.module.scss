@@ -1,0 +1,402 @@
+@use "../../styles/variables" as *;
+
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+
+  height: $nav-height;
+  background-color: transparent;
+}
+
+// Solid backing, keyed to --reveal-done (published by ScrollReveal): fades in the
+// moment the circle finishes expanding, i.e. as the hold begins. Fully
+// transparent across the hero and the whole circle transition.
+.nav::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+
+  // Translucent rather than solid, over a plain blur. No saturate/brightness —
+  // those are what tint the backdrop; a bare blur leaves colours intact.
+  // Unprefixed only: Lightning CSS owns vendor prefixing, and a hand-written
+  // `-webkit-` duplicate makes it drop the pair entirely.
+  background-color: rgba($color-light, 0.9);
+  backdrop-filter: blur(12px);
+
+  // Opacity gates the whole layer, blur included, so both stay off until the
+  // circle has finished expanding.
+  opacity: var(--reveal-done, 0);
+  transition:
+    opacity 220ms ease-out,
+    background-color 220ms ease-out;
+
+  pointer-events: none;
+}
+
+// Third state: over the projects section and beyond, the bar sits on opaque
+// content, so the backing goes fully solid *and* fully opaque. Opacity is forced
+// here rather than left to --reveal-done: over a dark section the translucent
+// hold-state tint reads as see-through, and this is the state that must not.
+// grounded only turns on once a real section is under the viewport middle, which
+// is always past the hero, so this can't leak a background onto the hero.
+.nav[data-grounded="true"]::before {
+  background-color: $color-light;
+  opacity: 1;
+}
+
+// Grid, not flex: the logo expands on hover, and in a `space-between` row that
+// growth would push the centre links off-centre. Fixed side columns absorb it.
+.layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 2rem;
+
+  padding-inline: $nav-inset;
+
+  color: $color-light;
+}
+
+// Same circle as the reveal overlay, in viewport coordinates. `--reveal-r`
+// defaults to 0 so the dark layer is fully clipped away before the script runs.
+.dark {
+  color: $color-dark;
+  clip-path: circle(
+    var(--reveal-r, 0px) at var(--reveal-cx, 50vw) var(--reveal-cy, 50vh)
+  );
+  pointer-events: none;
+  will-change: clip-path;
+}
+
+// A pill that is circular at rest and grows rightwards on hover to uncover the
+// label. currentColor so the fill inverts with the light/dark twins.
+.logo {
+  justify-self: start;
+
+  display: flex;
+  align-items: center;
+
+  height: 4.5rem;
+  padding: 0.5rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+
+  transition: background-color 250ms ease-out;
+}
+
+.logoImg {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+// Collapsed to nothing at rest. `max-width` is the animatable stand-in for
+// `width: auto`; the global `box-sizing: border-box` means 0 swallows the
+// padding too, so the pill closes to a clean circle.
+.logoLabel {
+  display: flex;
+  align-items: center;
+
+  max-width: 0;
+  padding-inline: 0;
+  opacity: 0;
+
+  overflow: hidden;
+  white-space: nowrap;
+
+  // Same type as .ctaLink, so the two contact affordances read as a pair.
+  font-size: 0.95rem;
+  text-transform: uppercase;
+
+  transition:
+    max-width 400ms cubic-bezier(0.4, 0, 0.2, 1),
+    padding-inline 400ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 200ms ease-out;
+}
+
+// The arrow's shaft sits dead centre of its own box, so aligning it to the text
+// is really about the text: a line box carries ascender and descender space that
+// uppercase glyphs never touch, which centres the caps slightly high. Trimming
+// the box to the cap/baseline edges makes the caps' optical middle *be* the
+// box's middle, and `align-items: center` then lines the two up exactly.
+// Chrome/Safari only for now; elsewhere it degrades to line-box centring, which
+// is what this was before.
+// SwapText nests the run of text one level down (it stacks the outgoing and
+// incoming strings in a grid cell), so the trim has to reach the inner span too
+// — that is the box the caps actually live in.
+.logoLabelText,
+.logoLabelText > span {
+  line-height: 1;
+  text-box: trim-both cap alphabetic;
+}
+
+// Wider than tall, matching the 40x24 viewBox — this is the long arrow, not a
+// square icon. Sized down from its old home in the logo pill: inside the CTA it
+// shares a line with the label, and the full 2.25rem shaft outweighed the word.
+.arrow {
+  width: 1.75rem;
+  height: 1.05rem;
+  flex-shrink: 0;
+
+  transition: transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+// Same dual-layer trick as the logo: hover lands on the interactive bottom
+// layer, but past the reveal circle the dark twin is the copy being looked at,
+// so both arrows travel together.
+.nav:has(.cta:hover) .arrow,
+.nav:has(.cta :focus-visible) .arrow {
+  transform: translateX(0.2rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arrow {
+    transition-duration: 1ms;
+  }
+}
+
+// Hover is resolved on the header, not the link: only the top layer is
+// interactive, but the dark twin above it is the copy actually visible past the
+// reveal. Keying both off `.nav:has(…)` keeps them expanding in lockstep.
+.nav:has(.logo:hover) .logo,
+.nav:has(.logo:focus-visible) .logo {
+  background: color-mix(in srgb, currentColor 18%, transparent);
+}
+
+.nav:has(.logo:hover) .logoLabel,
+.nav:has(.logo:focus-visible) .logoLabel {
+  max-width: 12rem;
+  padding-inline: 0.75rem 0.75rem;
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logoLabel {
+    transition-duration: 1ms;
+  }
+}
+
+.links {
+  justify-self: center;
+
+  display: flex;
+  gap: 2rem;
+
+  a {
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  // The rule lives on the span holding the *visible* string, not on the <a>.
+  // The link is deliberately as wide as the wider of its two languages (SwapText
+  // parks an invisible copy of each there, so a locale swap shifts nothing), so
+  // an underline spanning the <a> would overshoot the word in whichever language
+  // is the shorter — "Projects" underlined to the width of "Proyectos".
+  // SwapText's ghosts carry aria-hidden; the live text is the one that doesn't.
+  a > span > span:not([aria-hidden]) {
+    position: relative;
+  }
+
+  // Wipes in from the left; on the way out it keeps going and leaves to the
+  // right rather than rewinding. Pure transform, so it can't nudge the label.
+  a > span > span:not([aria-hidden])::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: -0.4rem;
+    height: 1px;
+
+    background: currentColor;
+    opacity: 0.85;
+
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+// Resolved on the header, not the link. Only the bottom layer takes a pointer,
+// but the dark twin above it is the copy you actually see past the reveal — so
+// the hover has to light the same link in both. Matched by position: the two
+// rows are rendered from one source and are identical.
+@for $i from 1 through 4 {
+  .nav:has(.links a:nth-child(#{$i}):hover)
+    .links
+    a:nth-child(#{$i})
+    > span
+    > span:not([aria-hidden])::after,
+  .nav:has(.links a:nth-child(#{$i}):focus-visible)
+    .links
+    a:nth-child(#{$i})
+    > span
+    > span:not([aria-hidden])::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+
+// The section on screen keeps its underline in — the same line the hover draws,
+// held rather than wiped. One visual, two meanings: "you could go here" on
+// hover, "you are here" at rest. aria-current also carries the state to screen
+// readers, and both colour layers get the attribute from the shared NavRow.
+.links a[aria-current] > span > span:not([aria-hidden])::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .links a > span > span:not([aria-hidden])::after {
+    transition-duration: 1ms;
+  }
+}
+
+// BorderGlow's wrapper. Its own class carries a dark fill, a white hairline and
+// a six-layer drop shadow — none of which suit a transparent pill, so these
+// override it. Compounding with :global() outranks it whatever the sheet order.
+// Right-hand column: language toggle + CTA.
+.actions {
+  justify-self: end;
+
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+:global(.border-glow-card).cta {
+  // Subtle-but-there resting hairline, held the same in every nav state — over
+  // the hero, the held second hero, and the solid bar over content. A
+  // full-strength currentColor line is opaque and paints straight through the
+  // glow, reading as a hard ring stamped over a halo; held back, the glow reads
+  // as the border itself lighting up. The language toggle carries the same value
+  // for consistency.
+  border: 1px solid color-mix(in srgb, currentColor 28%, transparent);
+  background: transparent;
+  box-shadow: none;
+  transition: border-color 250ms ease-out;
+
+  // The mesh-gradient layers hide their own interior behind an opaque
+  // `--card-bg` in padding-box. With a transparent card that mask disappears and
+  // the gradient floods the button. We only want the lit border, so drop both;
+  // .edge-light below is the ring that actually tracks the cursor.
+  &::before,
+  &::after {
+    display: none;
+  }
+
+  // Glow radii scaled to a pill. The stock values (inset 0 0 50px) are sized for
+  // a large card and swamp a 43px-tall button from the inside — but the inner
+  // radii have to stay tight while the outer ones carry the bloom, or the glow
+  // just fills the button again.
+  :global(.edge-light)::before {
+    box-shadow:
+      inset 0 0 0 1px var(--glow-color),
+      inset 0 0 2px 0 var(--glow-color-50),
+      inset 0 0 5px 0 var(--glow-color-30),
+      0 0 2px 0 var(--glow-color-60),
+      0 0 7px 1px var(--glow-color-40),
+      0 0 14px 2px var(--glow-color-30),
+      0 0 24px 3px var(--glow-color-10);
+  }
+}
+
+// Hover lights the button's glow fill; a solid border over that lit interior
+// reads as a hard ring stamped on a halo, so fade it as the glow takes over.
+// Resolved on the header, not the link, so it also reaches the inert dark twin —
+// the copy actually visible past the reveal, whose `.cta` never receives :hover
+// itself. Applies in every state now, not just grounded.
+.nav:has(.cta:hover) :global(.border-glow-card).cta,
+.nav:has(.cta :focus-visible) :global(.border-glow-card).cta {
+  border-color: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.ctaLink {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+
+  padding: 0.75rem 1.5rem;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 48rem) {
+  // A shorter bar. At the desktop height the controls sit 60px down a 667px
+  // screen, which reads as three objects floating rather than a navigation bar.
+  .nav {
+    height: $nav-height-mobile;
+  }
+
+  // Two ends, nothing between. The desktop grid exists to keep the centre links
+  // centred while the logo grows on hover; with the links gone, `display: none`
+  // on the middle child collapses that grid's auto-placement and drops .actions
+  // into the CENTRE column — which is what parked the menu button mid-bar.
+  // Flex with space-between says what this row now is: logo left, actions
+  // right, hard against their gutters.
+  .layer {
+    display: flex;
+    justify-content: space-between;
+    padding-inline: 1.25rem;
+  }
+
+  .links {
+    display: none;
+  }
+
+  // Steps aside for the menu toggle: avatar + language toggle + CTA + toggle
+  // overruns 375px, and the CTA is the one of the four that has somewhere
+  // better to be — it reappears at the foot of the panel as its primary action.
+  // Compounded with :global() to outrank BorderGlow's own `display: grid`,
+  // whatever order the two sheets land in.
+  :global(.border-glow-card).cta {
+    display: none;
+  }
+
+  // Tighter than the desktop rail, so the two remaining controls read as a pair
+  // rather than as two unrelated objects at the same edge.
+  .actions {
+    gap: 0.75rem;
+  }
+
+  // Scaled to the shorter bar. At the desktop size the pill is 72px inside an
+  // 80px bar, leaving 4px of air and making the avatar the bar rather than the
+  // mark in it.
+  .logo {
+    height: 3.25rem;
+  }
+
+  .logoImg {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  // No hover on touch. The expanding name-label is a desktop affordance: on a
+  // phone the "hover" is the tap itself, and sticky :hover left the pill stuck
+  // open over the bar after every visit to the top. The label simply does not
+  // exist here, and the pill's fill is pinned to its resting state.
+  .logoLabel {
+    display: none;
+  }
+
+  .nav:has(.logo:hover) .logo,
+  .nav:has(.logo:focus-visible) .logo {
+    background: color-mix(in srgb, currentColor 10%, transparent);
+  }
+}
+
+// No reveal circle without motion, so the dark twin has nothing to clip to.
+@media (prefers-reduced-motion: reduce) {
+  .dark {
+    display: none;
+  }
+}

@@ -1,0 +1,306 @@
+@use "../../styles/variables" as *;
+
+$ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+
+// The About ledger's palette: this is the same paper world, one section up.
+$rule: color-mix(in srgb, #{$color-dark} 14%, transparent);
+$rule-hover: color-mix(in srgb, #{$color-dark} 38%, transparent);
+$muted: color-mix(in srgb, #{$color-dark} 58%, transparent);
+
+.projects {
+  display: grid;
+  place-items: center;
+  min-height: 100dvh;
+  padding: calc(#{$nav-height} + #{$gutter}) $gutter $gutter;
+
+  background-color: $color-light;
+  color: $color-dark;
+}
+
+.inner {
+  width: 100%;
+  max-width: 72rem;
+}
+
+.label {
+  display: block;
+  margin-bottom: 1rem;
+
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $muted;
+}
+
+// The same editorial scale as every other section: the one place it raises
+// its voice.
+.heading {
+  max-width: 24ch;
+
+  font-size: clamp(1.75rem, 3vw, 2.75rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+// Two plates a row, all equal: half the page per plate is what makes the
+// panes read as pictures instead of thumbnails, and no project outranks
+// another.
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3rem 2rem;
+
+  margin-top: clamp(1.75rem, 3.5vh, 3rem);
+  list-style: none;
+}
+
+// A plate in a catalogue: the pane is the picture, the caption is the record.
+// No box around the pair — the hairline under the media is all the structure
+// the card needs on this paper.
+.card {
+  display: flex;
+  flex-direction: column;
+
+  height: 100%;
+  color: inherit;
+
+  &:focus-visible {
+    outline: 2px solid $color-accent;
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+}
+
+// Ink-backed and radiused like every pane on the site. The recording plays
+// inside on hover — a glimpse through a window, not an embedded player.
+.media {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+
+  border-radius: 16px;
+  background: $color-dark;
+  box-shadow: 0 20px 40px -20px rgb(0 0 0 / 0.4);
+
+  transition: box-shadow 450ms $ease-out-expo;
+}
+
+// The pane's cut edge: a hairline ring drawn over the media, dark-on-dark at
+// rest, warming as the hover lands. Without it the ink bleeds into whatever
+// dark frame the recording opens on.
+.media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border: 1px solid color-mix(in srgb, #{$color-dark} 22%, transparent);
+  border-radius: inherit;
+  pointer-events: none;
+
+  transition: border-color 450ms $ease-out-expo;
+}
+
+.card:hover .media,
+.card:focus-visible .media {
+  box-shadow: 0 28px 52px -22px rgb(0 0 0 / 0.5);
+
+  &::after {
+    border-color: color-mix(in srgb, #{$color-dark} 42%, transparent);
+  }
+}
+
+// The designed fallback under the video: brand ground, two-letter mark. It is
+// what loading, failure and reduced motion all look like — never a black box.
+.fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.monogram {
+  font-size: 3rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: $color-light;
+}
+
+.video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+// The hover record. Ink washed up from the bottom edge over the lower ~42% of
+// the pane, deep enough at the floor to hold text and gone well before the
+// middle, so the picture is still the picture. Under `.media::after`, so the
+// pane's hairline ring stays unbroken across it.
+.overlay {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 0;
+
+  display: flex;
+  align-items: flex-end;
+  height: 42%;
+  padding: 1.5rem 1.5rem 1.375rem;
+
+  background: linear-gradient(
+    to top,
+    rgb(0 0 0 / 0.82) 0%,
+    rgb(0 0 0 / 0.58) 42%,
+    rgb(0 0 0 / 0.22) 74%,
+    transparent 100%
+  );
+
+  opacity: 0;
+  transition: opacity 300ms $ease-out-expo;
+  pointer-events: none;
+}
+
+// The type settles up as it arrives — opacity and transform only, so the
+// reveal never touches layout.
+.overlayInner {
+  display: flex;
+  flex-direction: column;
+
+  transform: translateY(8px);
+  transition: transform 320ms $ease-out-expo;
+}
+
+.card:hover .overlay,
+.card:focus-visible .overlay {
+  opacity: 1;
+}
+
+.card:hover .overlayInner,
+.card:focus-visible .overlayInner {
+  transform: none;
+}
+
+// The kind of work, set at caption scale on the ink.
+.overlayKind {
+  margin-bottom: 0.75rem;
+
+  font-size: 1.0625rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  color: $color-light;
+}
+
+// What it was for: one line each, tracked out and generously led, the way a
+// plate's particulars sit under its title.
+.overlayDetail {
+  font-size: 0.75rem;
+  letter-spacing: 0.09em;
+  line-height: 1.9;
+  text-transform: uppercase;
+  color: color-mix(in srgb, #{$color-light} 66%, transparent);
+}
+
+// The record under the picture, held off it by a hairline.
+.caption {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+
+  margin-top: 1.125rem;
+  padding-top: 0.875rem;
+  border-top: 1px solid $rule;
+
+  transition: border-color 300ms $ease-out-expo;
+}
+
+.card:hover .caption,
+.card:focus-visible .caption {
+  border-top-color: $rule-hover;
+}
+
+.captionTop {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.cardTitle {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.cardYear {
+  margin-left: auto;
+
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: $muted;
+  font-variant-numeric: tabular-nums;
+}
+
+// Parked translucent beside the year; slides in on hover. Transform and
+// opacity only — nothing here touches layout.
+.cardArrow {
+  width: 0.95rem;
+  height: 0.95rem;
+  align-self: center;
+  color: $color-accent;
+
+  opacity: 0;
+  transform: translate(-0.3rem, 0.3rem);
+  transition:
+    opacity 300ms $ease-out-expo,
+    transform 300ms $ease-out-expo;
+}
+
+.card:hover .cardArrow,
+.card:focus-visible .cardArrow {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+
+.cardOutcome {
+  // Reserve three lines. The outcome reflows to a different line count between
+  // languages, and this section sits above Services — without a fixed measure,
+  // a swap while reading Services would change this height and shift the whole
+  // page under the reader. 3 × line-height holds the tallest case on both.
+  min-height: calc(3 * 1.5em);
+
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: $muted;
+}
+
+// The overlay still appears on hover under reduced motion; it just arrives
+// already in place instead of travelling there.
+@media (prefers-reduced-motion: reduce) {
+  .media,
+  .media::after,
+  .caption,
+  .cardArrow,
+  .overlay,
+  .overlayInner {
+    transition: none;
+  }
+
+  .overlayInner {
+    transform: none;
+  }
+}
+
+@media (max-width: 64rem) {
+  .projects {
+    padding-inline: 1.5rem;
+  }
+
+  .gallery {
+    grid-template-columns: 1fr;
+    gap: 2.25rem;
+  }
+}

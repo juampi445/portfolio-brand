@@ -1,0 +1,47 @@
+[
+  {
+    "slug": "nerva-studio",
+    "title": "Nerva Studio",
+    "monogram": "Ne",
+    "year": "2026",
+    "url": "https://lnkd.in/dRUsyNhY",
+    "video": "/videos/nerva.webm",
+    "accent": "#2f2b28"
+  },
+  {
+    "slug": "quintana",
+    "title": "Quintana",
+    "monogram": "Qa",
+    "year": "2024",
+    "url": "https://www.somosquintana.com/ar",
+    "video": "/videos/quintana.webm",
+    "accent": "#dfd6bf"
+  },
+  {
+    "slug": "rocketly",
+    "title": "Rocketly",
+    "monogram": "Ro",
+    "year": "2023",
+    "url": "https://rocketly.com.ar",
+    "video": "/videos/rocketly.webm",
+    "accent": "#1a7855"
+  },
+  {
+    "slug": "void-strikers",
+    "title": "Void Strikers",
+    "monogram": "VS",
+    "year": "2023",
+    "url": null,
+    "video": "/videos/void.webm",
+    "accent": "#272744"
+  },
+  {
+    "slug": "lol-champions",
+    "title": "LoL Champions",
+    "monogram": "LC",
+    "year": "2022",
+    "url": "https://lol-app.vercel.app",
+    "video": "/videos/lol-video.webm",
+    "accent": "#c89b3c"
+  }
+]

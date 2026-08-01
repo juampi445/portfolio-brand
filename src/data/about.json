@@ -1,0 +1,42 @@
+{
+  "ledger": [
+    {
+      "id": "rocketly",
+      "company": "Rocketly",
+      "logo": "/rocketly_company_logo.webp",
+      "href": "https://www.linkedin.com/company/rocketly-company/"
+    },
+    {
+      "id": "noswar",
+      "company": "Noswar Studios",
+      "logo": "/noswar_logo.webp",
+      "href": "https://www.linkedin.com/company/noswar-studios/"
+    },
+    {
+      "id": "minimalart",
+      "company": "Minimal Art",
+      "logo": "/minimalart_logo.webp",
+      "href": "https://www.linkedin.com/company/minimalart/"
+    }
+  ],
+  "credentials": [
+    {
+      "id": "henry",
+      "href": "https://certificates.soyhenry.com/cert?id=d6aa44b2-3b85-463f-9ac5-b98af3070a36",
+      "external": true
+    },
+    {
+      "id": "efset",
+      "href": "https://cert.efset.org/mTRQtd",
+      "external": true
+    },
+    {
+      "id": "cv",
+      "href": {
+        "en": "/cv/JuanCuadrelli_Full_Stack_CV_EN.pdf",
+        "es": "/cv/JuanCuadrelli_Frontend_CV_ES.pdf"
+      },
+      "external": false
+    }
+  ]
+}

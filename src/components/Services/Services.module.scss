@@ -1,0 +1,405 @@
+@use "../../styles/variables" as *;
+
+$ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+
+// Section tones, on the ink. Pushed up from before for more contrast on the
+// dark ground: the rule reads as a real hairline, the muted text sits clearly
+// above the background instead of dissolving into it.
+$rule: color-mix(in srgb, #{$color-light} 20%, transparent);
+$muted: color-mix(in srgb, #{$color-light} 74%, transparent);
+
+// Card tones, on the paper — the About ledger's palette, since each card is a
+// pane of that light world floated over the dark section. Deepened to match the
+// stronger contrast on the ink side: the hairline reads, the secondary text
+// sits with real weight against the paper instead of washing out.
+$card-rule: color-mix(in srgb, #{$color-dark} 18%, transparent);
+$card-muted: color-mix(in srgb, #{$color-dark} 84%, transparent);
+$card-body: color-mix(in srgb, #{$color-dark} 94%, transparent);
+
+.services {
+  padding: calc(#{$nav-height} + #{$gutter}) $gutter 4rem;
+
+  // Land the #services anchor 80px past the section's top edge. Reveal holds a
+  // -80px viewport margin (see Reveal.tsx), so a block sitting in that last
+  // 80px of the fold is in view but not revealed yet — which is exactly where
+  // the rail's hand-off lands when the jump stops dead on the section top. The
+  // number is that margin, not a fudge: overshoot by precisely what the reveal
+  // keeps in reserve. Negative, so the scroll goes deeper rather than shallower,
+  // and Lenis honours it on anchor jumps the same way native smooth scroll does.
+  // Safe here specifically because the rail is sticky: it catches at
+  // $nav-height + 2.75rem, so scrolling further in never pushes it off.
+  scroll-margin-top: -5rem;
+
+  background-color: $color-dark;
+  color: $color-light;
+}
+
+// Two rails: a fixed-width left column that stays put, and the cards on the
+// right. align-items:start is load-bearing — it lets the sticky rail be shorter
+// than the tall card column so it actually has room to travel.
+.inner {
+  display: grid;
+  grid-template-columns: minmax(14rem, 19rem) minmax(0, 1fr);
+  align-items: start;
+  column-gap: clamp(2.5rem, 6vw, 6rem);
+
+  width: 100%;
+  max-width: 78rem;
+  margin-inline: auto;
+}
+
+// ─── Left rail ──────────────────────────────────────────────────────────────
+
+.rail {
+  position: sticky;
+  top: calc(#{$nav-height} + 2.75rem);
+
+  display: flex;
+  flex-direction: column;
+
+  // The rail reads as three stacked bands — heading, the live index, the
+  // hand-off — each parted by its own hairline (see .index and .cta). The flex
+  // gap only sets the air around those rules; the rules do the dividing.
+  gap: clamp(2rem, 4.5vh, 3rem);
+}
+
+// Groups the heading block so the reveal fades it in as one.
+.head {
+  display: block;
+}
+
+// The one place the section raises its voice. Full-strength light on the ink
+// for maximum contrast, sized up a touch to anchor the rail.
+.heading {
+  font-size: clamp(1.75rem, 2.7vw, 2.6rem);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+  color: $color-light;
+}
+
+// The eyebrow. Here it carries the section's mint rather than the neutral grey
+// the other sections use — this is the section with the metallic mint marks, so
+// the label leads with the same colour, and reads with far more contrast than a
+// muted grey would on the ink.
+.label {
+  display: block;
+  margin-bottom: 0.9rem;
+
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: $color-primary;
+}
+
+// The live index is the LineSidebar component — it tracks the stack (active
+// follows the scroll) and jumps to a card on click. This class is just its slot
+// in the rail; the component owns its own layout, colour and animation. The
+// marker lines pull left inside its own padding, so nothing here fights it.
+.index {
+  // Second band: a hairline parts it from the heading above, matching the rule
+  // that opens the hand-off below, so the rail reads as three even sections.
+  padding-top: clamp(1.25rem, 3vh, 2rem);
+  border-top: 1px solid $rule;
+}
+
+// ─── The custom-work hand-off ───────────────────────────────────────────────
+
+// The fourth service, as two lines instead of a card: custom work starts as a
+// conversation.
+.cta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+
+  padding-top: clamp(1.25rem, 3vh, 2rem);
+  border-top: 1px solid $rule;
+}
+
+.ctaQuestion {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: $muted;
+}
+
+// The section's one spend of the mint on the ink side — same treatment as the
+// contact email link.
+.ctaLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  font-size: 0.98rem;
+  color: $color-primary;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, #{$color-primary} 35%, transparent);
+  text-underline-offset: 0.3em;
+  transition: text-decoration-color 200ms $ease-out-expo;
+
+  &:hover {
+    text-decoration-color: currentColor;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+}
+
+.ctaArrow {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+
+  transition: transform 300ms $ease-out-expo;
+}
+
+.ctaLink:hover .ctaArrow,
+.ctaLink:focus-visible .ctaArrow {
+  transform: translateX(0.2rem);
+}
+
+// ─── The stacked cards ──────────────────────────────────────────────────────
+
+// ScrollStack's scroller. It fills the right column; the pinning, per-card
+// margins and receding scale are all driven by the component off the window
+// scroll (see ScrollStack.tsx), written as inline transforms per card.
+.stack {
+  width: 100%;
+}
+
+// A pane of paper floated over the ink. Two panels: an identity rail and the
+// offer, split by a single hairline — a rule doing the work a nested box used to.
+// align-items:stretch so that hairline runs the full height of the card.
+.card {
+  display: grid;
+  grid-template-columns: minmax(10rem, 14rem) minmax(0, 1fr);
+  align-items: stretch;
+
+  width: 100%;
+  min-height: 20rem;
+  padding: clamp(1.75rem, 3vw, 2.75rem);
+
+  border: 1px solid color-mix(in srgb, #{$color-dark} 10%, transparent);
+  // Crisper than the old 26px: a catalogue plate reads as precise, not pillowy.
+  border-radius: 20px;
+  background: $color-light;
+  color: $color-dark;
+  // A three-stop elevation, all tinted toward the ink rather than pure black, so
+  // the pane reads as lifted off the dark section without a grey halo: a tight
+  // contact shadow, a mid lift, and a soft far cast.
+  box-shadow:
+    0 2px 6px -3px color-mix(in srgb, #{$color-dark} 55%, transparent),
+    0 14px 30px -22px color-mix(in srgb, #{$color-dark} 65%, transparent),
+    0 42px 80px -46px color-mix(in srgb, #{$color-dark} 78%, transparent);
+}
+
+// Identity rail: the mark, its glance-line, and when it ships — all three
+// centred as one group, horizontally and vertically, so the column reads as a
+// balanced stack rather than content stranded top and bottom. The hairline
+// lives on its trailing edge.
+.cardAside {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  // Gap between the mark and the text block (tightened).
+  gap: 0.35rem;
+  text-align: center;
+
+  // Padding only on the hairline side: the group then centres in the space
+  // before the divider, keeping clear of it rather than crowding it.
+  padding-inline-end: clamp(1.25rem, 2vw, 1.75rem);
+  border-inline-end: 1px solid $card-rule;
+}
+
+// The two meta lines, grouped so they sit close together as one block. The
+// margin-bottom parks the space reclaimed from the (now smaller) gaps below the
+// block, keeping the centred group the same overall height — so the mark stays
+// exactly where it was instead of drifting down as the gaps shrink.
+.cardMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  margin-bottom: 1.9rem;
+}
+
+// The Google glyph, rendered as a liquid-metal surface (MetallicPaint). It's a
+// square WebGL canvas that fills this box; the shader carries the mint colour,
+// so nothing here sets a fill. Centred in the column — the canvas's own ~15%
+// transparent padding (the viewBox is grown so the wavy edges never clip) is
+// symmetric, so the glyph sits dead-centre with no margin nudging needed.
+.cardIcon {
+  display: block;
+  width: clamp(8rem, 12vw, 12rem);
+  height: clamp(8rem, 12vw, 12rem);
+
+  canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+// A four-word read of who the service is for. Spacing is owned by the aside's
+// gap so the three elements share one rhythm.
+.cardTag {
+  font-size: 1.02rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: $card-muted;
+}
+
+// The aside's one spend of colour: when it ships. Tabular figures so the week
+// counts sit on a steady rhythm and never shimmer on a locale swap.
+.cardTimeline {
+  font-size: 0.86rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  color: $color-accent;
+}
+
+// The offer column. The ledger anchors to the floor, so both panels carry weight
+// top and bottom.
+.cardMain {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+
+  padding-inline-start: clamp(1.75rem, 3.5vw, 3rem);
+}
+
+.cardTitle {
+  font-size: clamp(1.55rem, 2.3vw, 2.15rem);
+  font-weight: 600;
+  line-height: 1.06;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+  color: $color-dark;
+}
+
+// Half voice: one line of what it is, not a paragraph. Sized up to a genuine
+// reading size — at ~1rem it was set like a caption while sitting in the widest
+// column on the page, which is what made it work to read.
+.cardLead {
+  margin-top: 0.9rem;
+  max-width: 44ch;
+
+  font-size: clamp(1.08rem, 1.15vw, 1.22rem);
+  line-height: 1.5;
+  text-wrap: pretty;
+  color: $card-muted;
+}
+
+.cardIncluded {
+  margin-top: auto;
+  padding-top: clamp(1.5rem, 2.5vw, 2.25rem);
+}
+
+// The ledger's eyebrow, in the deep accent — the paper-side echo of the mint
+// label that opens the left rail, and a clear contrast step above the muted
+// rows it heads.
+.includedLabel {
+  display: block;
+  margin-bottom: 0.7rem;
+
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: $color-accent;
+}
+
+// Deliverables as a ledger: rows parted by hairlines, no bullets, no icons. A
+// closing rule on the last row brackets the block so it reads as a complete
+// ledger, not a list that trails off.
+.includedList {
+  list-style: none;
+  border-bottom: 1px solid $card-rule;
+}
+
+// Taller rows and larger type. The ledger is the part of the card that gets
+// actually read line by line, and it was the smallest thing on it; the extra
+// row padding is also what takes up the slack the card had going spare.
+.includedItem {
+  padding: 0.9rem 0;
+  border-top: 1px solid $card-rule;
+
+  font-size: 1rem;
+  line-height: 1.5;
+  text-wrap: pretty;
+  color: $card-body;
+}
+
+// ─── Responsive ─────────────────────────────────────────────────────────────
+
+@media (max-width: 64rem) {
+  .services {
+    padding-inline: 1.5rem;
+  }
+
+  // One column: the rail stops being sticky and reads as an intro, then the
+  // cards follow. The live index is dropped — the cards carry the same titles a
+  // finger-swipe away, so it would only echo them.
+  .inner {
+    grid-template-columns: 1fr;
+    row-gap: clamp(2rem, 6vh, 3rem);
+  }
+
+  .rail {
+    position: static;
+    gap: 1.5rem;
+  }
+
+  .index {
+    display: none;
+  }
+}
+
+@media (max-width: 40rem) {
+  // The rail unfolds into a strip above the offer: the mark on the left, its
+  // meta beside it, the hairline now running under it. The card breathes down to
+  // its content instead of holding a tall min-height.
+  .card {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  .cardAside {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.9rem;
+    text-align: left;
+
+    padding-inline: 0;
+    padding-bottom: 1.25rem;
+    margin-bottom: 1.5rem;
+    border-inline-end: none;
+    border-bottom: 1px solid $card-rule;
+  }
+
+  .cardIcon {
+    width: 5.5rem;
+    height: 5.5rem;
+    // Tighten the canvas's transparent inset against the card edge in the strip.
+    margin-left: -0.6rem;
+  }
+
+  // In the strip the meta sits left-aligned beside the mark; the vertical-centre
+  // compensation margin isn't needed here.
+  .cardMeta {
+    align-items: flex-start;
+    margin-bottom: 0;
+  }
+
+  .cardMain {
+    padding-inline-start: 0;
+  }
+}

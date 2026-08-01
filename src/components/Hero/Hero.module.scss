@@ -1,0 +1,358 @@
+@use "../../styles/variables" as *;
+
+// Ease-out-quint — the curve the whole site moves on: Reveal, the text swaps,
+// the ledger rows, the rotator's width glide just below.
+$ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+
+.hero {
+  position: relative;
+  display: grid;
+  // Two bands: the nav's own reserved space, then everything left over. The
+  // content centres inside the second band, so the gap under the bar matches
+  // the gap above the fold's bottom edge. Centring against the whole viewport
+  // would push the block down by half the nav's height.
+  // `min-content` as the floor, not 0: on a short viewport the second band
+  // grows to hold the copy and the section runs past 100dvh, rather than the
+  // row staying put and `overflow: hidden` eating the tagline.
+  grid-template-rows: $nav-height minmax(min-content, 1fr);
+  min-height: 100dvh;
+  overflow: hidden;
+
+  background-color: $color-dark;
+  color: $color-light;
+}
+
+// The rays are a backdrop: full-bleed, behind the content, inert to pointers.
+.rays {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+// The usable hero area. Copy left, showcase right, both centred on the same
+// axis because they're rows of one `align-items: center` grid — neither column
+// can drift from the other.
+.content {
+  position: relative;
+  z-index: 1;
+  grid-row: 2;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(2rem, 4vw, 4rem);
+
+  // Same inset as the nav, so the copy hangs from the same left edge as the
+  // avatar pill above it — the quiet left region the rays leave dark. The
+  // block padding is symmetric so it never biases the centring.
+  padding-inline: $nav-inset;
+  padding-block: clamp(1.5rem, 4vh, 3rem);
+}
+
+.inner {
+  // Above the showcase: at narrow desktop widths a floating plate can drift
+  // into this column, and the copy always wins.
+  position: relative;
+  z-index: 1;
+}
+
+// The showcase hangs off the right edge of the padded area; it carries its own
+// size and aspect ratio, so it only needs placing.
+.showcase {
+  justify-self: end;
+}
+
+// The two-plate composition in the right column, right-aligned to the same edge
+// the floating stack used. The wrapper owns the aspect ratio of the pair, not of
+// one image, so both plates can be placed as percentages of it and the whole
+// arrangement scales as a single unit instead of drifting apart with the column.
+.devices {
+  position: relative;
+  justify-self: end;
+  width: min(40rem, 100%);
+  aspect-ratio: 73 / 62;
+}
+
+// Each plate is the same size; only the offset differs. 63% leaves them
+// overlapping by about a third, which is what makes the pair read as depth
+// rather than as two pictures side by side.
+.plate {
+  position: absolute;
+  width: 63%;
+
+  // Cast shadow, tinted toward the ink like the Services cards rather than pure
+  // black. Without it the upper plate's edge dies into the lower one's screen
+  // where they cross. If the exports already carry their own shadow, delete it.
+  filter: drop-shadow(0 18px 40px rgba(6, 10, 9, 0.5));
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
+
+// Inboard and high: the plate nearest the copy.
+.plateUpper {
+  top: 0;
+  left: 0;
+}
+
+// Out at the right edge and low, lying over the upper plate — and the last of
+// the two to arrive, so the overlap is the closing move of the entrance.
+.plateLower {
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+
+.kicker {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, #{$color-light} 74%, transparent);
+}
+
+.headline {
+  margin-top: 1.5rem;
+
+  font-size: clamp(2.5rem, 5.5vw, 5rem);
+  // Arial's one true bold — heavier values are synthesised and get ugly at
+  // display sizes.
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.headlineLine {
+  display: block;
+}
+
+// The rotating word, set as a solid mint block with ink text: the one place in
+// the hero where the accent is spent, on the thing that changes. Em units keep
+// the box proportional at every viewport.
+.rotator {
+  display: inline-flex;
+  margin-top: 0.18em;
+  padding: 0.04em 0.28em 0.1em;
+  border-radius: 0.18em;
+
+  background: $color-primary;
+  color: $color-dark;
+
+  // Entering and exiting characters travel vertically; without the clip they'd
+  // slide in from the open page instead of out of the block.
+  overflow: hidden;
+}
+
+// The measuring window. RotatingWord sets its width in px from the current
+// word's ghost; this transition is the glide the eye reads as the block
+// resizing. Width is a layout property, but the region is a few characters —
+// the same budget the nav's logoLabel max-width spends.
+.window {
+  position: relative;
+  display: block;
+  transition: width 500ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+// One invisible copy of every word, stacked in one grid cell — the SwapText
+// sizing trick. Absolute so the stack never affects layout; `max-content` so
+// each ghost reports its own word's width, not the stack's.
+.ghosts {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  visibility: hidden;
+
+  > span {
+    grid-area: 1 / 1;
+    justify-self: start;
+    width: max-content;
+    white-space: pre;
+  }
+}
+
+// The live words (mainClassName). The component's own stylesheet lets rows
+// wrap; mid-glide the window is briefly narrower than the incoming word, and a
+// wrap there would grow the block a whole line taller. Overflow just clips
+// against the rotator instead. Two flex containers need the override: the
+// outer span mainClassName lands on, and the per-rotation inner span that
+// actually lays out the words — both carry the component's `text-rotate`
+// flex-wrap class.
+.rotator .words,
+.rotator .words :global(.text-rotate) {
+  flex-wrap: nowrap;
+}
+
+// Per-word clip box (splitLevelClassName). The sliver of bottom padding keeps
+// descenders from shearing while they travel.
+.rotatorClip {
+  overflow: hidden;
+  padding-bottom: 0.06em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .window {
+    transition-duration: 1ms;
+  }
+}
+
+.tagline {
+  margin-top: 2rem;
+  max-width: 40ch;
+
+  font-size: clamp(1.125rem, 1.6vw, 1.375rem);
+  line-height: 1.55;
+  color: color-mix(in srgb, #{$color-light} 74%, transparent);
+  text-wrap: balance;
+}
+
+// The primary action, built as a rule rather than a button. A bordered pill is
+// the default answer everywhere, and it would be the third boxed thing in a
+// column whose whole language is hairlines — the About ledger and the Services
+// rail both divide with rules, and this is the same instrument played once more.
+// The label holds the left edge, the arrow the right, and the line under them
+// spans the distance: an entry in a list of one, with somewhere to go.
+.cta {
+  position: relative;
+
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-top: 2.75rem;
+  width: min(21rem, 100%);
+
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid color-mix(in srgb, #{$color-light} 26%, transparent);
+
+  // Larger than the tagline and set in the light rather than the mint: at this
+  // width the line is the thing that says "action", so the words are free to be
+  // read as words. Sentence case, no tracking — wide uppercase micro-type is
+  // exactly the agency reflex the brand avoids.
+  font-size: clamp(1.05rem, 1.3vw, 1.2rem);
+  font-weight: 500;
+  white-space: nowrap;
+  color: color-mix(in srgb, #{$color-light} 92%, transparent);
+
+  transition: color 300ms $ease-out-quint;
+
+  // The mint, spent here as a single line drawn left to right over the hairline
+  // — the rule doesn't change colour, a second one is drawn on top of it. scaleX
+  // so the sweep is a transform: a width animation would relayout every frame,
+  // and this sits directly under a headline that is already animating.
+  &::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: -1px;
+    height: 1px;
+
+    background-color: $color-primary;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 550ms $ease-out-quint;
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: $color-light;
+  }
+
+  &:hover::after,
+  &:focus-visible::after {
+    transform: scaleX(1);
+  }
+
+  // The rule is the element's own edge, so an outline ring would double it.
+  // Focus draws the sweep instead, and marks the text.
+  &:focus-visible {
+    outline: none;
+    text-decoration: underline;
+    text-underline-offset: 0.35em;
+    text-decoration-color: color-mix(in srgb, #{$color-primary} 60%, transparent);
+  }
+}
+
+// Sits on the right end of the rule and steps toward it on hover. It carries the
+// mint on its own, so the accent is present before the sweep and the CTA never
+// looks inert.
+// Wider than tall, matching the 40x24 viewBox — this is the long arrow the nav
+// CTA uses, not a square icon.
+.ctaArrow {
+  width: 2.1rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  align-self: center;
+
+  color: $color-primary;
+  transition: transform 400ms $ease-out-quint;
+
+  .cta:hover &,
+  .cta:focus-visible & {
+    transform: translateX(0.3rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta::after,
+  .ctaArrow {
+    transition-duration: 1ms;
+  }
+}
+
+// Below the desktop breakpoint the two columns become one, and the running
+// order changes with them: the plates move up to sit between the tagline and
+// the CTA, so the CTA still closes the section instead of being buried above a
+// tall image.
+//
+// `display: contents` on the copy wrapper is what makes that possible without
+// touching the markup. The plates are a sibling of the whole copy block, so no
+// amount of ordering could put them *inside* it — dissolving the wrapper's box
+// lifts its four children into this flex column, where the CTA can be sent
+// past the plates on its own.
+@media (max-width: 64rem) {
+  .content {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    // The children carry their own vertical rhythm as margins (see .headline,
+    // .tagline, .cta); a container gap would stack on top of all of it.
+    gap: 0;
+  }
+
+  .inner {
+    display: contents;
+  }
+
+  // The CTA's wrapper — the last thing in the copy block. Everything else stays
+  // at the default order of 0 and so keeps its DOM position, including the
+  // plates, which now fall directly after the tagline.
+  .inner > :last-child {
+    order: 1;
+  }
+
+  .devices {
+    // justify-self is a grid property and does nothing here; the plates simply
+    // take the column's full width and centre their own composition.
+    width: 100%;
+    max-width: 34rem;
+    // Sets the gap above the plates. The gap below them is the CTA's own
+    // margin-top, which it keeps wherever `order` puts it — margins are laid
+    // out in visual order, so nothing extra is needed on this side.
+    margin-top: 3rem;
+    align-self: center;
+  }
+}
+
+@media (max-width: 48rem) {
+  .content {
+    padding-inline: 1.5rem;
+  }
+
+  .devices {
+    margin-top: 2.5rem;
+  }
+}
