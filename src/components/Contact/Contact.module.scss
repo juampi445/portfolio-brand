@@ -647,6 +647,23 @@ $muted: color-mix(in srgb, #{$color-light} 74%, transparent);
   .details {
     margin-top: 1.75rem;
   }
+
+  // Centred once the layout stacks. On the desktop the button hangs off the
+  // form's left edge, in line with every field above it — the column has a left
+  // margin to be read against. Stacked, the pane is the full width of the screen
+  // and that same edge leaves the one control on the card stranded in a wide
+  // empty row, so it takes the centre instead.
+  //
+  // The failure message rides along: it wraps to its own line under the button
+  // (it holds a 16rem floor and the row is narrower than button + message here),
+  // and a left-set paragraph under a centred button reads as two loose objects.
+  .submitRow {
+    justify-content: center;
+  }
+
+  .failed {
+    text-align: center;
+  }
 }
 
 @media (max-width: 48rem) {

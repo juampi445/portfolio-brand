@@ -25,6 +25,22 @@ $ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
   min-height: 100svh;
   padding: calc(#{$nav-height} + #{$gutter}) $gutter $gutter;
 
+  // The credential cards' halo is a real element, not a shadow: BorderGlow's
+  // `.edge-light` is absolutely positioned at `inset: -28px` (the glowRadius
+  // passed in About.tsx), so it sticks 28px out of every card on all four sides
+  // and, being laid out rather than painted, it extends the page's scrollable
+  // area. On the desktop the section's $gutter (64px) swallows it. Stacked, the
+  // gutter drops to 1.5rem (24px) and the cards span the column — so the halo
+  // ended 4px past the right edge of the viewport and the whole document
+  // scrolled sideways by that much.
+  //
+  // `overflow-x` alone, and `clip` rather than `hidden`: this must not become a
+  // scroll container in either axis — `hidden` would make one, and clipping the
+  // block axis would cut the section's own content. Nothing is lost visually:
+  // the halo only lights on hover, which is a desktop state, and there the
+  // gutter already keeps it well inside the page.
+  overflow-x: clip;
+
   background-color: $color-primary-light;
   color: $color-dark;
 }
