@@ -371,8 +371,16 @@
   // Scaled to the shorter bar. At the desktop size the pill is 72px inside an
   // 80px bar, leaving 4px of air and making the avatar the bar rather than the
   // mark in it.
+  //
+  // The padding has to come down with it. The pill has no width of its own — it
+  // is the avatar plus its padding on both sides — so its roundness is an
+  // arithmetic identity: height must equal image + 2 × padding. Scaling the
+  // height and the image while leaving 0.5rem behind made it 56px across and
+  // 52px tall, and a 4px-wide oval is exactly the kind of wrong that reads as
+  // "off" without being nameable. 0.375rem × 2 + 2.5rem = 3.25rem.
   .logo {
     height: 3.25rem;
+    padding: 0.375rem;
   }
 
   .logoImg {
@@ -391,6 +399,24 @@
   .nav:has(.logo:hover) .logo,
   .nav:has(.logo:focus-visible) .logo {
     background: color-mix(in srgb, currentColor 10%, transparent);
+  }
+}
+
+// Below the line there is no reveal stage and so no circle: ScrollReveal drops
+// it and publishes --reveal-done alone, flipped at the point the hero hands the
+// bar over to the page (see ScrollReveal.tsx). The twin needs some other way in,
+// so it takes the same one the backing under it uses — the same variable, the
+// same duration, the same curve, so the bar goes solid and its text goes dark as
+// one movement instead of two.
+//
+// The clip is cleared outright rather than left to the published radius: these
+// two rules have to agree, and a circle is not what this state is.
+@media (max-width: #{$compact-max}) {
+  .dark {
+    clip-path: none;
+    opacity: var(--reveal-done, 0);
+    transition: opacity 220ms ease-out;
+    will-change: opacity;
   }
 }
 

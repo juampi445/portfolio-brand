@@ -4,6 +4,7 @@
     "description": "One-person studio. Websites for businesses that need to look established from the first screen."
   },
   "nav": {
+    "home": "Home",
     "projects": "Projects",
     "services": "Services",
     "about": "About",

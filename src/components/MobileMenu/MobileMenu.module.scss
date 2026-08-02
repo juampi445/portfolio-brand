@@ -34,6 +34,9 @@ $panel-duration: 620ms;
 // contact block 40% in, so both are moving while the surface is still settling.
 $items-delay: $panel-delay + $panel-duration * 0.15;
 $items-stagger: 90ms;
+// Rows in the list, which is what the stagger loop below runs over: Home, then
+// the four sections. Matches menuLinks in Nav.tsx.
+$item-count: 5;
 $items-duration: 900ms;
 $foot-delay: $panel-delay + $panel-duration * 0.4;
 $foot-duration: 550ms;
@@ -321,9 +324,11 @@ $reduced-out: 200ms;
   transition: transform $items-duration $ease-item $items-delay;
 }
 
-// One literal delay per row, same reason as the sheets above. Four items is the
-// nav's whole set, and the loop is the source of truth for both.
-@for $i from 1 through 4 {
+// One literal delay per row, same reason as the sheets above. The count is the
+// panel's whole set — Home plus the four sections (see menuLinks in Nav.tsx) —
+// and a row past the end of this loop would get no delay at all, arriving ahead
+// of every row above it instead of last. Keep the two in step.
+@for $i from 1 through $item-count {
   .root[data-open="true"] .item:nth-child(#{$i}) .itemInner {
     transition-delay: $items-delay + ($i - 1) * $items-stagger;
   }

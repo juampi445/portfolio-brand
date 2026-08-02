@@ -1,0 +1,85 @@
+@use "../../styles/variables" as *;
+
+// Structure only — the slides carry their own look. The carousel owns the
+// clipping, the drag affordance and the dots.
+
+.container {
+  position: relative;
+
+  // Clip sideways, not vertically: the slides here are paper panes with a deep
+  // cast shadow, and plain `overflow: hidden` would shear it flat top and
+  // bottom. `clip` is the one value that can pair with a visible cross axis.
+  overflow: hidden;
+  overflow-x: clip;
+  overflow-y: visible;
+}
+
+.track {
+  display: flex;
+  // Slides stretch to the tallest one, so a short card doesn't leave the track
+  // ragged as it swings past.
+  align-items: stretch;
+}
+
+.item {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  // The slide is a frame; whatever is handed to it fills the frame.
+  cursor: grab;
+
+  // A drag across a card would otherwise sweep a selection through its copy,
+  // which reads as the swipe failing.
+  user-select: none;
+  -webkit-user-select: none;
+
+  > * {
+    width: 100%;
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.indicators {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+// Dots on the ink: the inactive ones sit as faint marks, the active one takes
+// the brand mint — the same one-spend-of-colour rule the rest of the section
+// follows. Generous hit area around a small mark, so a thumb has something to
+// land on without the dot itself growing.
+.indicator {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  appearance: none;
+  cursor: pointer;
+
+  background-color: color-mix(in srgb, #{$color-light} 28%, transparent);
+  transition:
+    background-color 200ms ease,
+    transform 200ms ease;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -12px;
+  }
+
+  &.active {
+    background-color: $color-primary;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 4px;
+  }
+}

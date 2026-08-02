@@ -147,13 +147,20 @@ $line: color-mix(in srgb, #{$color-light} 14%, transparent);
 
 // Pushed to the foot of the column so it sits level with the last link beside
 // it — the quiet particular at the bottom of the record.
+//
+// Every size, not just the small ones: the tone is the same on a 27" display as
+// on a phone, and it was reading as barely-there on both. $faint (56% light)
+// measures ~5.3:1 on the pane, which clears AA on paper but is a sentence set at
+// 0.78rem in the darkest corner of the page, and the number was flattering it.
+// 68% lands around 7:1 — AAA at this size — while the tagline above keeps $muted
+// at 74%, so the step down in the hierarchy survives the step up in legibility.
 .colophon {
   margin-top: auto;
   padding-top: 1.75rem;
 
   font-size: 0.78rem;
   line-height: 1.6;
-  color: $faint;
+  color: color-mix(in srgb, #{$color-light} 68%, transparent);
 }
 
 .column {
@@ -403,5 +410,33 @@ $line: color-mix(in srgb, #{$color-light} 14%, transparent);
   // The pane keeps its edge, but not at the cost of the content's measure.
   .panel {
     padding: 1.75rem 1.5rem;
+  }
+
+  // The signature block centres: a name, a line under it and two short lines
+  // about the studio — a closing plate, not a column of a record. The two link
+  // columns below it deliberately do not follow. They are navigation and a list
+  // of channels, each row an icon and a label, and a centred list has no edge
+  // for the eye to run down.
+  .brand {
+    align-items: center;
+    text-align: center;
+    margin-inline: auto;
+  }
+
+  // The mint hairline is drawn by the name's own ::after, so centring the text
+  // does not move it — it is a block in the flow and would stay hard left.
+  .name::after {
+    margin-inline: auto;
+  }
+
+  // Stacked and centred. The desktop baseline holds the notice and the way back
+  // up at opposite ends of a rule; at this width "opposite ends" is a few
+  // centimetres and reads as two things that failed to line up.
+  .baseline {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.9rem;
+    text-align: center;
   }
 }

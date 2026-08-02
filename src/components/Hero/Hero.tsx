@@ -183,7 +183,10 @@ export default function Hero({ dict }: { dict: HeroDict }) {
               the mint sweeps across on hover. The accent is already spent
               solid on the rotating word above, so this one spends it as a
               line — the section's own instrument, played once more. */}
-          <Reveal delay={0.24}>
+          {/* The wrapper is the flex item in the stacked layout, and the link
+              inside it is an inline-flex box — so on a phone it is the wrapper
+              that has to do the centring. Named for that reason alone. */}
+          <Reveal delay={0.24} className={styles.ctaWrap}>
             <a className={styles.cta} href={CONTACT_HREF}>
               <SwapText>{dict.cta}</SwapText>
               <CtaArrow />

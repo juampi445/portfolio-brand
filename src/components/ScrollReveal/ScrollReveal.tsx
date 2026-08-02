@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, type ReactNode } from "react";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { COMPACT_QUERY } from "@/styles/breakpoints";
 import styles from "./ScrollReveal.module.scss";
 
 type ScrollRevealProps = {
@@ -16,7 +18,25 @@ const useIsomorphicLayoutEffect =
 // Keep in sync with $reveal-radius in ScrollReveal.module.scss.
 const REVEAL_RADIUS = 0.75;
 
+// How far the compact branch lets the page move before the bar takes its
+// backing. Small on purpose: the bar goes white as soon as the page starts
+// moving, rather than waiting on a section edge — on a phone the nav is a
+// permanent object over whatever is passing under it, and it has to be legible
+// from the first flick.
+//
+// Not 0: a rubber-band overscroll or a browser restoring a scroll position of a
+// pixel or two would otherwise flip the bar back and forth. 12px is under a
+// finger's slop and over that noise.
+const COMPACT_HANDOFF = 12;
+
 export default function ScrollReveal({ base, overlay }: ScrollRevealProps) {
+  // The whole reveal — a 250vh track, a pinned stage, a growing clip circle and
+  // the second hero inside it — is a wheel-scrolled desktop set piece. Below the
+  // line it is not rendered at all rather than hidden: the overlay carries a
+  // marquee running its own animation loop, and there is nothing to reveal on a
+  // screen where the circle would be most of a phone anyway.
+  const compact = useMediaQuery(COMPACT_QUERY);
+
   const trackRef = useRef<HTMLDivElement>(null);
   const rampRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
@@ -26,6 +46,7 @@ export default function ScrollReveal({ base, overlay }: ScrollRevealProps) {
   // changes), and a post-paint effect would let the nav render one frame against
   // a --reveal-r of 0 — the whole bar flipping colour and back.
   useIsomorphicLayoutEffect(() => {
+    if (compact) return;
     const track = trackRef.current;
     const ramp = rampRef.current;
     const stage = stageRef.current;
@@ -102,7 +123,68 @@ export default function ScrollReveal({ base, overlay }: ScrollRevealProps) {
       // component — clearing them on unmount is what made the navbar blink on
       // every language switch. A remount republishes them in the same frame.
     };
-  }, []);
+  }, [compact]);
+
+  // The compact branch still owns the same three custom properties, because the
+  // nav is downstream of them and does not know which branch is running: the
+  // translucent backing is `opacity: var(--reveal-done)` and the dark twin —
+  // the readable copy of the bar over pale content — is gated on the same
+  // variable here (see the compact rule for `.dark` in Nav.module.scss, which
+  // swaps the clip circle for a plain crossfade, there being no circle).
+  //
+  // So: one flip, the moment the page starts moving.
+  //
+  // It lands before `useGrounded` in Nav.tsx (which goes solid at
+  // `projects.top <= innerHeight * 0.5`) rather than with it, and that ordering
+  // is the safe one — grounded forces the backing fully opaque on its own, so
+  // the dark twin has to be in place by then or the light nav text would sit on
+  // a solid light bar. Arriving early is invisible; arriving late is not.
+  useIsomorphicLayoutEffect(() => {
+    if (!compact) return;
+
+    const root = document.documentElement;
+    let frame = 0;
+
+    const update = () => {
+      frame = 0;
+      const handedOver = window.scrollY > COMPACT_HANDOFF;
+
+      root.style.setProperty("--reveal-done", handedOver ? "1" : "0");
+      // No circle on this branch, but the variables are published anyway: the
+      // nav's desktop rule is still in the cascade above the media query, and a
+      // stale radius from a resize across the line would clip the twin to a
+      // circle from the last layout.
+      root.style.setProperty("--reveal-r", handedOver ? "200vmax" : "0px");
+      root.style.setProperty("--reveal-cx", "50vw");
+      root.style.setProperty("--reveal-cy", "50vh");
+    };
+
+    const onScroll = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      // Left published, for the same reason as above.
+    };
+  }, [compact]);
+
+  if (compact) {
+    // The hero alone, as an ordinary block. It brings its own 100dvh floor, so
+    // there is nothing for the stage to have held it against.
+    return (
+      <div ref={trackRef} className={styles.plain}>
+        {base}
+      </div>
+    );
+  }
 
   return (
     <div ref={trackRef} className={styles.track}>

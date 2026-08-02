@@ -26,6 +26,13 @@ $reveal-radius: 75%;
   pointer-events: none;
 }
 
+// The compact branch's whole layout: a plain block holding the hero. No track
+// height, no pin, no clip — the reveal is a desktop set piece (see
+// ScrollReveal.tsx).
+.plain {
+  position: relative;
+}
+
 .stage {
   --reveal: 0;
 

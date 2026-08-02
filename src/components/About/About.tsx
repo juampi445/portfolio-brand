@@ -77,9 +77,17 @@ export default function About({
           </h2>
         </Reveal>
 
+        {/* Three lines on the desktop; the middle one is dropped once the
+            columns stack (see .leadSecondary in the stylesheet). It is the line
+            that restates the heading — "you talk to the developer, not an
+            account manager" against "you're working directly with the person
+            who writes the code" — so on a phone, where the two sit a thumb's
+            width apart instead of in separate columns, it reads as the same
+            sentence twice. Marked by index rather than matched by nth-child, so
+            the rule is legible from here. */}
         <Reveal delay={0.12} className={styles.lead}>
           {dict.lead.map((line, i) => (
-            <p key={i}>
+            <p key={i} className={i === 1 ? styles.leadSecondary : undefined}>
               <SwapText nowrap={false}>{line}</SwapText>
             </p>
           ))}

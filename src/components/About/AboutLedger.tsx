@@ -53,8 +53,16 @@ export default function AboutLedger({ rows }: { rows: LedgerRow[] }) {
               <SwapText>{row.period}</SwapText>
             </span>
 
+            {/* The one string in this row long enough to need a second line:
+                "Frontend & Game Developer, Team Lead", "Cofundador,
+                Desarrollador Full Stack". SwapText holds one line by default —
+                right for a label crossfading in place, wrong here, and the
+                nowrap it sets on its inner spans beats any `text-wrap` the
+                stylesheet asks for. Left on, it ran ~250px of unbreakable text
+                through a ~260px column on a phone and pushed the whole document
+                sideways: this is the small horizontal scroll. */}
             <span className={styles.role}>
-              <SwapText>{row.role}</SwapText>
+              <SwapText nowrap={false}>{row.role}</SwapText>
             </span>
 
             <span className={styles.company}>{row.company}</span>

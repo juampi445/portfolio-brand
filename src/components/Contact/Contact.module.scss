@@ -16,6 +16,8 @@ $muted: color-mix(in srgb, #{$color-light} 74%, transparent);
 
   display: grid;
   place-items: center;
+  // Fallback first, dynamic second — see the note in Hero.
+  min-height: 100vh;
   min-height: 100dvh;
   // Top padding is exactly the nav, bottom is zero: the grid then centres the
   // content in the true resting space between the nav's lower edge and the end
@@ -644,6 +646,17 @@ $muted: color-mix(in srgb, #{$color-light} 74%, transparent);
   // not eat the whole first screen.
   .details {
     margin-top: 1.75rem;
+  }
+}
+
+@media (max-width: 48rem) {
+  // The nav's share of this padding is a measurement of the bar, not a gutter
+  // (see the note on .contact), and below 48rem the bar is $nav-height-mobile —
+  // so the desktop figure was overstating it by 40px and pushing the whole
+  // section down that far. The air the 64rem block adds under the bar is kept,
+  // at the same 1.5rem the section's inline gutter runs at here.
+  .contact {
+    padding-top: $section-top-mobile;
   }
 }
 

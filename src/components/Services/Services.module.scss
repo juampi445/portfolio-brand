@@ -337,39 +337,36 @@ $card-body: color-mix(in srgb, #{$color-dark} 94%, transparent);
   color: $card-body;
 }
 
-// ─── Responsive ─────────────────────────────────────────────────────────────
 
-@media (max-width: 64rem) {
-  .services {
-    padding-inline: 1.5rem;
-  }
+// ─── The swipe track ────────────────────────────────────────────────────────
 
-  // One column: the rail stops being sticky and reads as an intro, then the
-  // cards follow. The live index is dropped — the cards carry the same titles a
-  // finger-swipe away, so it would only echo them.
-  .inner {
-    grid-template-columns: 1fr;
-    row-gap: clamp(2rem, 6vh, 3rem);
-  }
-
-  .rail {
-    position: static;
-    gap: 1.5rem;
-  }
-
-  .index {
-    display: none;
-  }
+// Below 75rem the stack is replaced by a Carousel of the same cards (see
+// Services.tsx — keep that breakpoint and the one below in step). It takes the
+// full column; the component measures that width and sizes its slides off the
+// measurement.
+.carousel {
+  width: 100%;
 }
 
-@media (max-width: 40rem) {
-  // The rail unfolds into a strip above the offer: the mark on the left, its
-  // meta beside it, the hairline now running under it. The card breathes down to
-  // its content instead of holding a tall min-height.
-  .card {
-    grid-template-columns: 1fr;
-    min-height: 0;
-  }
+// A card as a slide, and a shorter read: the glance-line and the deliverables
+// ledger are dropped on this side (in Services.tsx), leaving the mark, when it
+// ships, the claim and one line of it. So the two-column split has nothing left
+// to divide — the rail unfolds into a strip across the top, mark on the left
+// and its timeline beside it, the hairline now running underneath. The same
+// shape on a tablet as on a phone: it is one card held in the hand either way.
+//
+// Full height so all three slides match the tallest — a track of cards that
+// changed height as they swung would read as the page jumping. The elevation
+// drops a stop too: the pane sits near enough edge to edge here that the wide
+// far cast has nowhere to fall and only muddies the ink.
+.slideCard {
+  grid-template-columns: 1fr;
+  height: 100%;
+  min-height: 0;
+
+  box-shadow:
+    0 2px 6px -3px color-mix(in srgb, #{$color-dark} 55%, transparent),
+    0 12px 26px -20px color-mix(in srgb, #{$color-dark} 70%, transparent);
 
   .cardAside {
     flex-direction: row;
@@ -385,9 +382,11 @@ $card-body: color-mix(in srgb, #{$color-dark} 94%, transparent);
     border-bottom: 1px solid $card-rule;
   }
 
+  // Held to a strip-sized mark on a tablet as well: it is a stamp on the card
+  // here, not the column-filling plate it is beside the desktop ledger.
   .cardIcon {
-    width: 5.5rem;
-    height: 5.5rem;
+    width: clamp(4.75rem, 10vw, 6.5rem);
+    height: clamp(4.75rem, 10vw, 6.5rem);
     // Tighten the canvas's transparent inset against the card edge in the strip.
     margin-left: -0.6rem;
   }
@@ -401,5 +400,64 @@ $card-body: color-mix(in srgb, #{$color-dark} 94%, transparent);
 
   .cardMain {
     padding-inline-start: 0;
+  }
+
+  // Nothing follows the lead now, so it sets the card's floor. Capped shorter
+  // than the desktop measure — this column is the full width of a phone.
+  .cardLead {
+    max-width: 38ch;
+  }
+}
+
+// ─── Responsive ─────────────────────────────────────────────────────────────
+
+@media (max-width: #{$compact-max}) {
+  .services {
+    // The section opens on a label and a heading, not on a screen of dark.
+    padding-block: $section-top-tablet 3rem;
+    padding-inline: 1.5rem;
+
+    // The negative anchor offset above buys back the reveal's held-in-reserve
+    // 80px, and is only safe while the rail is sticky enough to follow the
+    // scroll down. Here the rail is static, so overshooting would land the jump
+    // with the heading already scrolled off. The section's own top padding
+    // clears the fixed nav, so plain 0 is the honest landing.
+    scroll-margin-top: 0;
+  }
+
+  // One column: the rail stops being sticky and reads as an intro, then the
+  // track, then the hand-off under it (moved there in Services.tsx). The live
+  // index is dropped — the carousel's own dots do that job an inch from the
+  // thumb, and the cards carry the same titles a swipe away, so it would only
+  // echo them.
+  //
+  // A tighter row rhythm than the old clamp: with the index gone there are only
+  // three bands left, and 3rem between them left the intro floating away from
+  // the track it introduces.
+  .inner {
+    grid-template-columns: 1fr;
+    row-gap: 2rem;
+  }
+
+  .rail {
+    position: static;
+    gap: 1.5rem;
+  }
+
+  .index {
+    display: none;
+  }
+
+  // Now the last thing in the section rather than the foot of the rail. Its
+  // hairline still opens it — it divides the hand-off from the track above it
+  // exactly as it divided it from the index before.
+  .cta {
+    padding-top: 1.5rem;
+  }
+}
+
+@media (max-width: 48rem) {
+  .services {
+    padding-top: $section-top-mobile;
   }
 }

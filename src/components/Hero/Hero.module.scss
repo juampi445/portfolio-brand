@@ -15,6 +15,10 @@ $ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
   // grows to hold the copy and the section runs past 100dvh, rather than the
   // row staying put and `overflow: hidden` eating the tagline.
   grid-template-rows: $nav-height minmax(min-content, 1fr);
+  // The pair, in this order: any engine without dynamic viewport units takes the
+  // static one and the section is still a screen tall. Same pattern the mobile
+  // menu already uses.
+  min-height: 100vh;
   min-height: 100dvh;
   overflow: hidden;
 
@@ -347,9 +351,63 @@ $ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
   }
 }
 
+// Phones. The hero is the one block on the site that centres here: it is
+// display type on a full screen with nothing beside it, so a left edge has
+// nothing to align *to* and reads as the column having slipped. Everything
+// below this section keeps its reading edge — see the note in About and
+// Projects, where the copy is prose and prose is read from the left.
 @media (max-width: 48rem) {
   .content {
     padding-inline: 1.5rem;
+  }
+
+  // The nav's reserved band, corrected to the bar that is actually there. The
+  // grid's first row is a measurement of the header (see the note at the top of
+  // this file), and below 48rem the header is $nav-height-mobile — holding the
+  // desktop figure left 40px of nothing above the kicker.
+  .hero {
+    grid-template-rows: $nav-height-mobile minmax(min-content, 1fr);
+  }
+
+  .kicker,
+  .headline,
+  .tagline {
+    text-align: center;
+  }
+
+  // The measure stays — 40ch is what keeps the tagline readable — but a centred
+  // block has to be centred in its column too, or the text sits centred inside a
+  // box that is itself hanging left.
+  .tagline {
+    margin-inline: auto;
+  }
+
+  // The centring happens here, on the wrapper, not on the link. The link is
+  // `display: inline-flex` and its parent is a plain block, so it is an
+  // inline-level box in a line box — `align-self` has nothing to align against
+  // (the flex item is this wrapper) and `margin-inline: auto` does nothing to an
+  // inline box either. `text-align` is what moves an inline-level box, and it is
+  // the only thing that does.
+  .ctaWrap {
+    text-align: center;
+  }
+
+  // And the rule shrinks to what it underlines. At 21rem it ran the full width
+  // of the column with the label pinned left and the arrow pinned right — a
+  // centred headline over a CTA reading edge to edge. Held to its content, the
+  // label and arrow travel together as one centred mark.
+  //
+  // The span the desktop rule buys — label one end, arrow the other, the line
+  // measuring the distance — is a wide-column idea. There is no wide column
+  // here.
+  .cta {
+    width: fit-content;
+    gap: 1.25rem;
+
+    // Puts the target past 44px. The rule is the element's own bottom edge, so
+    // the room has to come from above it — a bottom pad would push the hairline
+    // off the words.
+    padding-top: 0.6rem;
   }
 
   .devices {

@@ -10,6 +10,8 @@ $muted: color-mix(in srgb, #{$color-dark} 58%, transparent);
 .projects {
   display: grid;
   place-items: center;
+  // Fallback first, dynamic second — see the note in Hero.
+  min-height: 100vh;
   min-height: 100dvh;
   padding: calc(#{$nav-height} + #{$gutter}) $gutter $gutter;
 
@@ -104,8 +106,16 @@ $muted: color-mix(in srgb, #{$color-dark} 58%, transparent);
   transition: border-color 450ms $ease-out-expo;
 }
 
+// `[data-focused]` is the third way into the hover state, alongside the pointer
+// and the keyboard: on touch it is set on whichever plate the scroll has brought
+// to the middle of the screen (see ProjectsGallery.tsx). It rides the existing
+// selectors rather than getting a media query of its own — the attribute is only
+// ever written below the compact breakpoint, so on the desktop these clauses
+// match nothing. The transitions are already on the elements, so the plate comes
+// up and settles back exactly as it does under a cursor.
 .card:hover .media,
-.card:focus-visible .media {
+.card:focus-visible .media,
+.card[data-focused] .media {
   box-shadow: 0 28px 52px -22px rgb(0 0 0 / 0.5);
 
   &::after {
@@ -175,12 +185,14 @@ $muted: color-mix(in srgb, #{$color-dark} 58%, transparent);
 }
 
 .card:hover .overlay,
-.card:focus-visible .overlay {
+.card:focus-visible .overlay,
+.card[data-focused] .overlay {
   opacity: 1;
 }
 
 .card:hover .overlayInner,
-.card:focus-visible .overlayInner {
+.card:focus-visible .overlayInner,
+.card[data-focused] .overlayInner {
   transform: none;
 }
 
@@ -219,7 +231,8 @@ $muted: color-mix(in srgb, #{$color-dark} 58%, transparent);
 }
 
 .card:hover .caption,
-.card:focus-visible .caption {
+.card:focus-visible .caption,
+.card[data-focused] .caption {
   border-top-color: $rule-hover;
 }
 
@@ -260,7 +273,8 @@ $muted: color-mix(in srgb, #{$color-dark} 58%, transparent);
 }
 
 .card:hover .cardArrow,
-.card:focus-visible .cardArrow {
+.card:focus-visible .cardArrow,
+.card[data-focused] .cardArrow {
   opacity: 1;
   transform: translate(0, 0);
 }
@@ -296,11 +310,24 @@ $muted: color-mix(in srgb, #{$color-dark} 58%, transparent);
 
 @media (max-width: 64rem) {
   .projects {
+    // Stacked, the gallery is far taller than the screen, so the section's
+    // `place-items: center` never gets to centre anything — the top padding is
+    // simply the gap above the label, and at 11.5rem it was reading as a blank
+    // screen before the section started.
+    padding-block: $section-top-tablet 3rem;
     padding-inline: 1.5rem;
   }
 
   .gallery {
     grid-template-columns: 1fr;
     gap: 2.25rem;
+  }
+}
+
+// Phones: the bar shrinks to $nav-height-mobile, so the measurement above it
+// does too.
+@media (max-width: 48rem) {
+  .projects {
+    padding-top: $section-top-mobile;
   }
 }

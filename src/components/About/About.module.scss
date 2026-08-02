@@ -279,49 +279,145 @@ $ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
   border-radius: 12px;
 }
 
+
+// ─── Responsive ─────────────────────────────────────────────────────────────
+
+// Stacked, the section says less. Each tier keeps the part that carries it —
+// the claim, who each row was for, what each credential is — and drops what
+// only reads as texture at arm's length: the line that restates the heading,
+// the durations, the hover affordances, the card descriptions. Three tiers of
+// evidence in one column is a scroll; the point is that it stays a glance.
 @media (max-width: 64rem) {
   .about {
     grid-template-columns: 1fr;
-    gap: $gutter;
-    padding-inline: 1.5rem;
+    // One column is taller than a viewport on its own, so holding a 100dvh
+    // floor only bought dead air under the last card.
+    min-height: 0;
+    gap: clamp(2rem, 5vw, 3rem);
+    // The same opening measure the other stacked sections use, so the run down
+    // the page keeps one rhythm.
+    padding: $section-top-tablet 1.5rem 3.5rem;
   }
 
-  // Nothing to stick against once the columns stack.
-  .statement {
-    position: static;
+  // Wider measure and a shorter drop to it: with the ledger no longer beside
+  // the claim, the lead has the full column and nothing to line up against.
+  .lead {
+    margin-top: 1.25rem;
+    max-width: 46ch;
   }
 
-  // Logo | text | arrow. The logo and the arrow each span the full height of the
-  // stacked text so they stay centred against it.
+  .leadSecondary {
+    display: none;
+  }
+
   .ledger {
     margin-inline: 0;
   }
 
+  // Logo | company over role. Two named rows: with the tracks declared, the
+  // mark can be told to span the pair and be centred against the block as a
+  // whole — including when a long role wraps to a second line and the block
+  // grows under it.
   .row {
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    row-gap: 0.25rem;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    row-gap: 0.1rem;
     column-gap: 1rem;
-    padding-inline: 0;
+    padding: 1.15rem 0;
   }
 
+  // Spanning both text rows, centred across them by the row's own
+  // `align-items: center`.
+  //
+  // `1 / -1` looked like it did this and did not: a negative line number counts
+  // back from the end of the *explicit* grid, and with no grid-template-rows
+  // declared the explicit grid had no rows at all — so -1 resolved to line 1
+  // and the mark sat in row 1 alone, level with the company name and reading as
+  // top-aligned against the two lines beside it. The explicit tracks above fix
+  // the reference; the span says the intent outright.
   .rowLogo {
-    grid-row: 1 / -1;
+    grid-row: 1 / span 2;
+    align-self: center;
   }
 
-  .period,
-  .role,
+  // Company first here, role under it — the reverse of the desktop row, where
+  // the eye travels along a line and the company is what it lands on last.
+  // Stacked, the strongest thing has to be at the top. Placed by grid rather
+  // than reordered in the markup: the row is one link, so what a screen reader
+  // announces is the whole of it either way.
   .company {
+    grid-row: 1;
     grid-column: 2;
+    font-size: 1rem;
+    line-height: 1.25;
   }
 
+  // The long ones ("Frontend & Game Developer, Team Lead") wrap on a phone, so
+  // this line has to be set for two: a leading that holds together, and `pretty`
+  // so the wrap doesn't leave a single word stranded under it.
+  .role {
+    grid-row: 2;
+    grid-column: 2;
+    font-size: 0.875rem;
+    line-height: 1.35;
+    text-wrap: pretty;
+    color: $muted;
+  }
+
+  // The period goes: a duration is the least of what a row says, and set in
+  // tracked uppercase it was the loudest small thing in the column. The arrow
+  // goes with it — it only ever appears on hover, and nothing hovers here.
+  .period,
   .rowArrow {
-    grid-column: 3;
-    grid-row: 1 / -1;
+    display: none;
   }
 
-  // Three abreast only holds while the column is wide; below that the cards go
-  // narrower than their own titles.
+  .credentials {
+    margin-top: 2rem;
+  }
+
+  // As many across as fit at a legible width: three on a tablet, one on a
+  // phone, without a second breakpoint deciding it.
   .credentialList {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: 0.5rem;
+  }
+
+  // Down to a bar: the title and its icon on one line. The description said in
+  // half voice what the title says — worth the room in a three-abreast footer,
+  // not worth it in a stack a thumb scrolls past.
+  .credentialDescription {
+    display: none;
+  }
+
+  .credentialLink {
+    justify-content: center;
+    // Still comfortably past the 44px minimum target.
+    min-height: 3.5rem;
+    padding: 0.9rem 1rem;
+  }
+
+  .credentialText {
+    align-items: center;
+  }
+
+  // The idle sweep goes. It loops every 5s, forever, on three cards at once —
+  // and it exists to advertise the cursor-tracked arc that hover reveals, which
+  // is the one thing a touch screen can never do. So it is a permanent
+  // animation paying for an interaction that will never happen.
+  //
+  // Killing the animation and leaving the class is exactly what the
+  // reduced-motion rule in BorderGlow.css does: --edge-proximity holds at 0, so
+  // every layer's opacity formula resolves below zero and the card sits dark.
+  .credentialList :global(.border-glow-card.sweeping) {
+    animation: none;
+  }
+}
+
+// Phones: the bar shrinks to $nav-height-mobile, so the measurement above it
+// does too.
+@media (max-width: 48rem) {
+  .about {
+    padding-top: $section-top-mobile;
   }
 }

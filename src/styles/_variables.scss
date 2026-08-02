@@ -15,6 +15,13 @@ $color-accent: #286456;
 // Shared so sections can lay out against the fixed nav without guessing.
 $nav-height: 7.5rem;
 
+// The line between the desktop layouts and the touch ones. Keep in step with
+// COMPACT_QUERY in `breakpoints.ts`, which is the same line read from the JS
+// side — some of the desktop machinery has to not mount at all below it, and
+// only a script can decide that. Interpolate it in a query:
+// `@media (max-width: #{$compact-max})`.
+$compact-max: 75rem;
+
 // The bar itself only, below 48rem. 7.5rem is 120px, which on a 667px phone
 // pushes the controls a sixth of the way down the screen and leaves the bar
 // looking mis-set against its own contents. The sections keep padding by the
@@ -23,6 +30,14 @@ $nav-height: 7.5rem;
 $nav-height-mobile: 5rem;
 
 $gutter: 4rem;
+
+// What a section pads at the top once the layout goes compact — the bar that is
+// actually there, plus air. The surplus in `calc($nav-height + $gutter)` reads
+// as breathing room on a desktop; at 375px it is a quarter of the screen spent
+// before the first word, and on a phone the bar itself is only
+// $nav-height-mobile, so the figure was overstating the thing it measures too.
+$section-top-tablet: calc(#{$nav-height} + 1.5rem);
+$section-top-mobile: calc(#{$nav-height-mobile} + 1.5rem);
 
 // Nav insets are deeper than the page gutter, to pull the logo and the CTA in
 // off the edges and closer to the centre group.

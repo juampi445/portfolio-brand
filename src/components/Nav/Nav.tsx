@@ -286,10 +286,16 @@ export default function Nav() {
   const toggleMenu = useCallback(() => setMenuOpen((v) => !v), []);
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
-  const menuLinks = LINKS.map(({ key, href }) => ({
-    label: dict.nav[key],
-    href,
-  }));
+  // Home opens the panel's list, and only the panel's. On the bar the avatar
+  // pill is the way back to the top and is on screen at all times; inside the
+  // panel that pill is covered by the panel itself, so without this row the
+  // menu is the one place on the site with no way home. Prepended here rather
+  // than added to LINKS, which the desktop bar reads from too — there it would
+  // be a second home affordance sitting beside the first.
+  const menuLinks = [
+    { label: dict.nav.home, href: HOME_HREF },
+    ...LINKS.map(({ key, href }) => ({ label: dict.nav[key], href })),
+  ];
 
   return (
     // data-grounded latches on once Projects reaches the viewport middle — past
@@ -330,7 +336,12 @@ export default function Nav() {
         open={menuOpen}
         onClose={closeMenu}
         links={menuLinks}
-        active={active}
+        // `top` where the bar's own links get null: the observer reports no
+        // section over the hero, which used to mean "mark nothing" — right when
+        // there was no home link to mark. The panel has one now, and it is
+        // where you are, so it says so. The bar is unaffected: none of its
+        // hrefs is `#top`, so nothing there matches.
+        active={active ?? "top"}
         strings={{
           menuLabel: dict.nav.menuLabel,
           directLabel: dict.footer.directLabel,

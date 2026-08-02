@@ -4,6 +4,7 @@
     "description": "Estudio de una sola persona. Sitios web para negocios que necesitan verse consolidados desde la primera pantalla."
   },
   "nav": {
+    "home": "Inicio",
     "projects": "Proyectos",
     "services": "Servicios",
     "about": "Sobre mí",
