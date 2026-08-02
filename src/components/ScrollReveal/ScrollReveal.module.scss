@@ -11,9 +11,13 @@ $hold-distance: 30vh;
 // ratio. 75% clears the corners with a little margin.
 $reveal-radius: 75%;
 
+// The track is the pinned screen plus the two scroll budgets. Its screen term
+// has to be the same unit as `.stage` below, or the pin runs out early. `svh`
+// for both, matching the sections — see the note in Hero.
 .track {
   position: relative;
-  height: calc(100dvh + #{$reveal-distance} + #{$hold-distance});
+  height: calc(100vh + #{$reveal-distance} + #{$hold-distance});
+  height: calc(100svh + #{$reveal-distance} + #{$hold-distance});
 }
 
 // Zero-layout marker whose height *is* the reveal distance. The script measures
@@ -38,7 +42,8 @@ $reveal-radius: 75%;
 
   position: sticky;
   top: 0;
-  height: 100dvh;
+  height: 100vh;
+  height: 100svh;
   overflow: hidden;
 }
 

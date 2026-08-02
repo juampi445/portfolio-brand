@@ -12,14 +12,18 @@ $ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
   // the gap above the fold's bottom edge. Centring against the whole viewport
   // would push the block down by half the nav's height.
   // `min-content` as the floor, not 0: on a short viewport the second band
-  // grows to hold the copy and the section runs past 100dvh, rather than the
+  // grows to hold the copy and the section runs past a screen, rather than the
   // row staying put and `overflow: hidden` eating the tagline.
   grid-template-rows: $nav-height minmax(min-content, 1fr);
-  // The pair, in this order: any engine without dynamic viewport units takes the
-  // static one and the section is still a screen tall. Same pattern the mobile
-  // menu already uses.
+  // `svh`, not `dvh`: the small viewport is a fixed number — the height with a
+  // mobile browser's chrome *shown* — so it does not change when the URL bar
+  // hides or returns, and the section never shifts mid-scroll. `lvh` would be
+  // the other fixed choice, but it sizes to the chrome-hidden viewport and so
+  // hides the bottom of the content behind the bars while they are up.
+  // The pair, in this order: any engine without the small viewport unit takes
+  // the static one and the section is still a screen tall.
   min-height: 100vh;
-  min-height: 100dvh;
+  min-height: 100svh;
   overflow: hidden;
 
   background-color: $color-dark;

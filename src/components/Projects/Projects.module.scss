@@ -10,9 +10,9 @@ $muted: color-mix(in srgb, #{$color-dark} 58%, transparent);
 .projects {
   display: grid;
   place-items: center;
-  // Fallback first, dynamic second — see the note in Hero.
+  // Fallback first, small viewport second — see the note in Hero.
   min-height: 100vh;
-  min-height: 100dvh;
+  min-height: 100svh;
   padding: calc(#{$nav-height} + #{$gutter}) $gutter $gutter;
 
   background-color: $color-light;

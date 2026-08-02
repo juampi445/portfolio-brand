@@ -10,7 +10,7 @@ html {
   scroll-behavior: smooth;
 }
 
-// No scroll offset for the fixed nav on purpose. The sections are each 100dvh,
+// No scroll offset for the fixed nav on purpose. The sections are each 100svh,
 // so landing flush on a section's top edge fits it to the viewport exactly; any
 // nav-height correction here would push a neighbouring section into view.
 @media (prefers-reduced-motion: reduce) {

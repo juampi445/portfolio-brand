@@ -20,7 +20,9 @@ $ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
   align-content: center;
   align-items: start;
 
-  min-height: 100dvh;
+  // Fallback first, small viewport second — see the note in Hero.
+  min-height: 100vh;
+  min-height: 100svh;
   padding: calc(#{$nav-height} + #{$gutter}) $gutter $gutter;
 
   background-color: $color-primary-light;
@@ -290,8 +292,9 @@ $ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
 @media (max-width: 64rem) {
   .about {
     grid-template-columns: 1fr;
-    // One column is taller than a viewport on its own, so holding a 100dvh
-    // floor only bought dead air under the last card.
+    // One column is taller than a viewport on its own, so holding a full-screen
+    // floor only bought dead air under the last card. Overrides both
+    // declarations above, so no fallback pair is needed here.
     min-height: 0;
     gap: clamp(2rem, 5vw, 3rem);
     // The same opening measure the other stacked sections use, so the run down

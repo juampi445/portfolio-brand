@@ -16,9 +16,9 @@ $muted: color-mix(in srgb, #{$color-light} 74%, transparent);
 
   display: grid;
   place-items: center;
-  // Fallback first, dynamic second — see the note in Hero.
+  // Fallback first, small viewport second — see the note in Hero.
   min-height: 100vh;
-  min-height: 100dvh;
+  min-height: 100svh;
   // Top padding is exactly the nav, bottom is zero: the grid then centres the
   // content in the true resting space between the nav's lower edge and the end
   // of the section, not in that space minus an arbitrary gutter.

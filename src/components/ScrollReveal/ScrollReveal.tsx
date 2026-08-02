@@ -177,7 +177,7 @@ export default function ScrollReveal({ base, overlay }: ScrollRevealProps) {
   }, [compact]);
 
   if (compact) {
-    // The hero alone, as an ordinary block. It brings its own 100dvh floor, so
+    // The hero alone, as an ordinary block. It brings its own full-screen floor, so
     // there is nothing for the stage to have held it against.
     return (
       <div ref={trackRef} className={styles.plain}>

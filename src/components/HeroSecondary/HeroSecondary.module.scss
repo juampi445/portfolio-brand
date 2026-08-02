@@ -2,7 +2,9 @@
 
 .heroSecondary {
   display: flex;
-  min-height: 100dvh;
+  // Fallback first, small viewport second — see the note in Hero.
+  min-height: 100vh;
+  min-height: 100svh;
 
   // Clear the fixed nav, then leave the same breathing room at the bottom.
   padding-block: calc(#{$nav-height} + #{$gutter}) $gutter;
