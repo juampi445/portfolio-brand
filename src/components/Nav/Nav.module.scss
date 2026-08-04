@@ -107,6 +107,22 @@
   display: flex;
   align-items: center;
 
+  // Full height of the pill's content box rather than shrink-wrapped to the
+  // text. `overflow: hidden` below is here for the horizontal collapse, but it
+  // clips both axes — and it cannot be split, since `overflow-y: visible`
+  // against a hidden x computes to `auto` and would make this a scroll
+  // container. So the vertical clip edge has to be moved away from the glyphs
+  // instead of switched off.
+  //
+  // Shrink-wrapped, it sat exactly on them: .logoLabelText trims its box to the
+  // cap and baseline edges (see below), leaving the clip rect flush with the
+  // top of the capitals and no slack at all. That survives 100% zoom, where the
+  // edge lands on a whole pixel, and fails at every other scale — the box
+  // rounds down, the glyphs paint at the fractional offset, and the top row of
+  // the caps is shaved off. Stretching to 3.5rem puts ~20px between the text
+  // and the clip edge, which no rounding error can cross.
+  align-self: stretch;
+
   max-width: 0;
   padding-inline: 0;
   opacity: 0;
