@@ -42,6 +42,30 @@
     "title": "Projects",
     "heading": "Selected work: client sites and projects of my own.",
     "items": {
+      "metal-index": {
+        "outcome": "Live music app: four separate APIs pulled together and normalised into one catalog of bands, setlists and tour dates.",
+        "tags": [
+          "Web app",
+          "API integration",
+          "Data normalisation"
+        ]
+      },
+      "fernandez-inmobiliaria": {
+        "outcome": "Real-estate site with its own dashboard: the agency edits listings itself, and a chatbot handles first contact.",
+        "tags": [
+          "Multi-page site",
+          "Admin dashboard",
+          "Chatbot"
+        ]
+      },
+      "vincula": {
+        "outcome": "Brand-presence landing page: one page carrying the whole positioning for a company that had none online.",
+        "tags": [
+          "Landing page",
+          "Brand presence",
+          "UX/UI"
+        ]
+      },
       "nerva-studio": {
         "outcome": "Fashion e-commerce, end to end: shop with dynamic filters, working cart and checkout, and a full admin dashboard.",
         "tags": [

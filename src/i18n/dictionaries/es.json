@@ -42,6 +42,30 @@
     "title": "Proyectos",
     "heading": "Sitios para clientes y proyectos propios.",
     "items": {
+      "metal-index": {
+        "outcome": "App de música en vivo: cuatro APIs distintas unificadas y normalizadas en un solo catálogo de bandas, setlists y fechas de gira.",
+        "tags": [
+          "Web app",
+          "Integración de APIs",
+          "Normalización de datos"
+        ]
+      },
+      "fernandez-inmobiliaria": {
+        "outcome": "Sitio inmobiliario con panel propio: la agencia actualiza las propiedades sola, y un chatbot atiende el primer contacto.",
+        "tags": [
+          "Sitio multipágina",
+          "Panel de admin",
+          "Chatbot"
+        ]
+      },
+      "vincula": {
+        "outcome": "Landing de presencia de marca: una sola página que sostiene todo el posicionamiento de una empresa que no tenía nada online.",
+        "tags": [
+          "Landing page",
+          "Presencia de marca",
+          "UX/UI"
+        ]
+      },
       "nerva-studio": {
         "outcome": "E-commerce de moda de punta a punta: tienda con filtros dinámicos, carrito y checkout funcionales, y un panel de administración completo.",
         "tags": [

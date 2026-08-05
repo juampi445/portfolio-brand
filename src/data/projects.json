@@ -1,5 +1,32 @@
 [
   {
+    "slug": "metal-index",
+    "title": "Metal Index",
+    "monogram": "Mi",
+    "year": "2026",
+    "url": "https://metal-woad.vercel.app/",
+    "video": "/videos/metal.webm",
+    "accent": "#1d1f21"
+  },
+  {
+    "slug": "fernandez-inmobiliaria",
+    "title": "Fernández Inmobiliaria",
+    "monogram": "Fi",
+    "year": "2026",
+    "url": "https://fernandezinmobiliaria.vercel.app/",
+    "video": "/videos/fernandez.webm",
+    "accent": "#1b3a5c"
+  },
+  {
+    "slug": "vincula",
+    "title": "Vincula",
+    "monogram": "Vi",
+    "year": "2026",
+    "url": "https://vincula.group/",
+    "video": "/videos/vincula.webm",
+    "accent": "#123a34"
+  },
+  {
     "slug": "nerva-studio",
     "title": "Nerva Studio",
     "monogram": "Ne",
