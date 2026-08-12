@@ -9,6 +9,7 @@
     "home": "Inicio",
     "projects": "Proyectos",
     "services": "Servicios",
+    "process": "Proceso",
     "about": "Sobre mí",
     "contact": "Contacto",
     "cta": "Hablemos",
@@ -110,48 +111,107 @@
   },
   "services": {
     "title": "Servicios",
-    "heading": "Mis proyectos suelen tener una de estas formas.",
-    "lead": "Alcance fijo, plazo honesto, hecho para durar.",
+    "heading": "Paquetes claros, sin sorpresas.",
     "includedLabel": "Incluye",
     "items": {
       "landing": {
-        "title": "Landing pages",
-        "tag": "Una oferta, una página",
-        "lead": "Una sola página con un único objetivo: convertir a quien la visita en un contacto o una venta.",
+        "index": "01",
+        "title": "Web Profesional",
+        "price": "USD 500",
+        "tag": "Para profesionales y servicios",
         "included": [
-          "Todo apunta a una sola acción",
-          "Carga en menos de un segundo en cualquier teléfono",
-          "Métricas y seguimiento conectados desde el primer día"
+          "Diseño a medida desde cero, hasta 5 secciones",
+          "Optimizada para Google y de carga veloz: SEO, Search Console y performance",
+          "Formulario directo a tu mail + botón a WhatsApp y redes"
         ],
-        "timeline": "En línea en 1 a 2 semanas"
+        "terms": "Seña USD 200 (40%)",
+        "timeline": "Entrega en 2 semanas"
       },
       "events": {
-        "title": "Sitios para eventos",
-        "tag": "Para toda la ocasión",
-        "lead": "Un solo link que acompaña el evento, desde el primer save the date hasta la mañana del gran día.",
+        "index": "02",
+        "title": "Web + Panel",
+        "price": "USD 750",
+        "tag": "Para quien actualiza seguido",
+        "inherits": "Incluye todo el Paquete 1",
         "included": [
-          "RSVP y lista de invitados, resueltos en el sitio",
-          "Diseñado a juego con tus invitaciones",
-          "Cronograma, cómo llegar y novedades en un solo lugar"
+          "Panel de administración a medida",
+          "Editás textos, imágenes y secciones sin depender de nadie",
+          "Lo usás desde el celular o la computadora"
         ],
-        "timeline": "En línea en 2 a 3 semanas"
+        "terms": "Seña USD 300 (40%)",
+        "timeline": "Entrega en 2 a 3 semanas"
       },
       "professional": {
-        "title": "Sitios profesionales",
-        "tag": "Tu presencia completa",
-        "lead": "El sitio completo para un nombre que tiene que verse establecido desde la primera pantalla.",
+        "index": "03",
+        "title": "A Medida",
+        "price": "A convenir",
+        "tag": "Para requerimientos específicos",
+        "inherits": "Incluye todo el Paquete 1 o 2",
+        "includedLabel": "Por ejemplo",
         "included": [
-          "Diseñado sobre tu identidad, nunca una plantilla",
-          "Contenido que actualizás vos mismo",
-          "Preparado para buscadores, y bilingüe cuando lo necesites"
+          "Agendador de turnos y confirmación de asistencia",
+          "Integraciones y secciones a medida",
+          "Lo cotizamos juntos según tu proyecto"
         ],
-        "timeline": "En línea en 3 a 4 semanas"
+        "terms": "Según el alcance",
+        "timeline": "Alcance a definir"
       }
     },
     "cta": {
-      "question": "¿Necesitás algo fuera de estas tres?",
-      "action": "Definámoslo juntos."
+      "question": "¿No sabés cuál te conviene?",
+      "action": "Escribime y lo vemos."
     }
+  },
+  "process": {
+    "title": "Proceso",
+    "heading": "De la primera charla a tu sitio publicado.",
+    "intro": "Cinco pasos. En cada uno sabés qué hago yo y qué necesito de vos.",
+    "lanes": {
+      "you": "Vos",
+      "me": "Yo",
+      "both": "Los dos"
+    },
+    "stamps": {
+      "deposit": "Seña 40%",
+      "balance": "Saldo 60%"
+    },
+    "steps": [
+      {
+        "title": "Charlamos",
+        "description": "Me contás qué necesitás y para quién. Coordinamos por WhatsApp, con mensajes o audios para agilizar, y si preferís hablarlo agendamos una llamada. Salimos de ahí con el paquete elegido."
+      },
+      {
+        "title": "Reservás",
+        "description": "La seña reserva tu lugar en la agenda y arranca el trabajo. Te paso un checklist corto de lo que necesito: logo, textos, fotos y redes. Si algo te falta, lo resolvemos juntos."
+      },
+      {
+        "title": "Diseño y desarrollo",
+        "description": "Construyo tu sitio desde cero y te comparto avances a medida que avanzo. El plazo de entrega corre desde que tengo todo el material."
+      },
+      {
+        "title": "Revisiones",
+        "description": "Dos rondas de cambios para dejarlo como lo tenías en la cabeza. En cada ronda juntás tus comentarios y me los pasás de una vez."
+      },
+      {
+        "title": "Entrega y online",
+        "description": "Ves el sitio terminado en una vista previa. Lo aprobás, abonás el saldo y lo publico en tu dominio, listo para funcionar."
+      }
+    ],
+    "notesTitle": "Letra chica",
+    "notes": [
+      {
+        "label": "Hosting",
+        "body": "Incluido. No pagás nada aparte para tener el sitio online."
+      },
+      {
+        "label": "Dominio",
+        "body": "Lo comprás vos, unos USD 10 a 15 al año, y queda a tu nombre. De configurarlo me encargo yo."
+      },
+      {
+        "label": "Pagos en pesos",
+        "body": "Los precios están en USD y podés abonarlos en pesos, al promedio entre la compra y la venta del dólar del Banco Nación del día en que pagás."
+      }
+    ]
   },
   "about": {
     "title": "Sobre mí",

@@ -246,7 +246,7 @@
 // but the dark twin above it is the copy you actually see past the reveal — so
 // the hover has to light the same link in both. Matched by position: the two
 // rows are rendered from one source and are identical.
-@for $i from 1 through 4 {
+@for $i from 1 through 5 {
   .nav:has(.links a:nth-child(#{$i}):hover)
     .links
     a:nth-child(#{$i})
@@ -344,6 +344,28 @@
   padding: 0.75rem 1.5rem;
   font-size: 0.95rem;
   white-space: nowrap;
+}
+
+// Five destinations instead of four, and every label is sized to the wider of
+// its two languages — so the centre group is wider than it was at every width.
+// Between a full desktop and the phone bar (which drops the links entirely)
+// that extra label is what would push the group into the actions beside it. The
+// deep nav inset is what gives way: it exists to pull the logo and the CTA in
+// off the edges on a wide screen, and on a narrow one there are no edges to
+// spare. Declared before the 48rem block so the phone's own inset still wins.
+@media (max-width: 68rem) {
+  .layer {
+    padding-inline: 2.5rem;
+    gap: 1.25rem;
+  }
+
+  .links {
+    gap: 1.5rem;
+
+    a {
+      font-size: 0.875rem;
+    }
+  }
 }
 
 @media (max-width: 48rem) {

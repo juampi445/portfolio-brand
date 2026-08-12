@@ -41,13 +41,20 @@ function useLocale(): Locale {
 
 // The page's sections, in scroll order. The hero is deliberately absent: it has
 // no nav link, so nothing is marked current while it's on screen.
-const SECTION_IDS = ["projects", "services", "about", "contact"] as const;
+const SECTION_IDS = [
+  "projects",
+  "services",
+  "process",
+  "about",
+  "contact",
+] as const;
 
 // One source for the destinations, shared by the desktop bar and the mobile
 // panel, so the two can't drift out of order or out of sync.
 const LINKS = [
   { key: "projects", href: "#projects" },
   { key: "services", href: "#services" },
+  { key: "process", href: "#process" },
   { key: "about", href: "#about" },
   { key: "contact", href: CONTACT_HREF },
 ] as const;

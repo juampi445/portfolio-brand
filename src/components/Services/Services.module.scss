@@ -15,6 +15,13 @@ $muted: color-mix(in srgb, #{$color-light} 74%, transparent);
 $card-rule: color-mix(in srgb, #{$color-dark} 18%, transparent);
 $card-muted: color-mix(in srgb, #{$color-dark} 84%, transparent);
 $card-body: color-mix(in srgb, #{$color-dark} 94%, transparent);
+// A fourth step, below the muted one, for the rail's small print: the deposit
+// line has to sit under the tag as clearly as the tag sits under the price, and
+// at 84% the two were the same voice at two sizes. 70% and not lower — at
+// 0.78rem this is the smallest type on the card, and small type is exactly
+// where a muted tone stops being quiet and starts being hard to read. Around
+// 8:1 on the paper, so it is a step down in emphasis, not in legibility.
+$card-faint: color-mix(in srgb, #{$color-dark} 70%, transparent);
 
 .services {
   padding: calc(#{$nav-height} + #{$gutter}) $gutter 4rem;
@@ -105,10 +112,21 @@ $card-body: color-mix(in srgb, #{$color-dark} 94%, transparent);
   border-top: 1px solid $rule;
 }
 
-// ─── The custom-work hand-off ───────────────────────────────────────────────
+// Now that the rows are numbered, the figures need holding back: the component's
+// stock index is a mono numeral at 0.85em and near-full strength, which against
+// three two-word labels reads as a second column of data — and this section
+// already has a column of figures, on the cards. Smaller and dimmer, it does
+// what a position marker should: you see it when you look for it. The active
+// row still lifts its own, since --effect drives the opacity here too.
+.index :global(.line-sidebar__index) {
+  font-size: 0.7em;
+  opacity: calc(0.4 + var(--effect, 0) * 0.35);
+}
 
-// The fourth service, as two lines instead of a card: custom work starts as a
-// conversation.
+// ─── The hand-off ───────────────────────────────────────────────────────────
+
+// Help choosing, as two lines instead of a card: the section ends in a
+// conversation, not in a fourth box.
 .cta {
   display: flex;
   flex-direction: column;
@@ -177,11 +195,47 @@ $card-body: color-mix(in srgb, #{$color-dark} 94%, transparent);
 // align-items:stretch so that hairline runs the full height of the card.
 .card {
   display: grid;
-  grid-template-columns: minmax(10rem, 14rem) minmax(0, 1fr);
+  // A rem wider than it was, bought back from the offer column: the rail now
+  // holds a line that is not allowed to wrap (see .cardTag), and the longest of
+  // the three needs the room to clear the hairline it sits beside.
+  grid-template-columns: minmax(10rem, 15rem) minmax(0, 1fr);
   align-items: stretch;
 
   width: 100%;
-  min-height: 20rem;
+  // Two jobs, and the `min()` is what does both at once.
+  //
+  // The floor is set *above* the tallest card rather than below it, which is
+  // what makes the three identical: every card then resolves to exactly this
+  // height, and a stack that pins them one over another has nothing hanging out
+  // from behind the card in front.
+  //
+  // 25.25rem is roughly what the tallest of the three wants at the *narrowest*
+  // width this layout runs at — 1200px, where the offer column is at its
+  // tightest and the rows wrap hardest. Past ~1376px the inner column hits its
+  // 78rem cap, nothing moves again, and every card wants a little under this —
+  // so on a normal desktop the floor is close to what all three render at, and
+  // the difference collects in the offer column's one gap rather than as a band
+  // of empty paper under everything.
+  //
+  // It came down from 27.5rem when the column was split top-and-bottom (see
+  // .cardMain): with the ledger hung from the floor, height the cards do not
+  // need shows as a hole in the middle of the offer rather than as air at the
+  // foot of it, so the floor has to be near the content instead of safely over
+  // it. Still sized to the worst case, though — three cards that match at 1440
+  // and disagree at 1280 is the failure this number exists to prevent, and the
+  // stack pins them one over another, so a card that outgrows the floor hangs
+  // out from behind the one in front.
+  //
+  // The ceiling (70vh) is what keeps the card inside the viewport once it pins
+  // under the nav. On a short laptop the cards give up matching before they
+  // give up fitting, which is the right way round: a card you have to scroll
+  // inside is broken, three cards a line apart in height are not.
+  //
+  // This all rests on every package having exactly three deliverables and one
+  // inheritance row, drawn or reserved. That is a content rule, not a
+  // coincidence — a fourth deliverable puts a card over the floor and the three
+  // stop matching.
+  min-height: min(25.25rem, 70vh);
   padding: clamp(1.75rem, 3vw, 2.75rem);
 
   border: 1px solid color-mix(in srgb, #{$color-dark} 10%, transparent);
@@ -198,17 +252,27 @@ $card-body: color-mix(in srgb, #{$color-dark} 94%, transparent);
     0 42px 80px -46px color-mix(in srgb, #{$color-dark} 78%, transparent);
 }
 
-// Identity rail: the mark, its glance-line, and when it ships — all three
-// centred as one group, horizontally and vertically, so the column reads as a
-// balanced stack rather than content stranded top and bottom. The hairline
-// lives on its trailing edge.
+// Identity rail: one block, centred in the card's height, in three parts —
+// the mark, the price with its deposit line, then the pair below a rule.
+//
+// Three devices carry the hierarchy, not one. Size does the first cut (the
+// price is the largest thing here by a wide margin). Interval does the second:
+// 1.15rem from the mark down to the price, 0.15rem from the price to its own
+// footnote, so the two are read as one object. And the rule above the last pair
+// does the third — it says outright that what follows is a different kind of
+// fact, which spacing alone was being asked to carry and could not.
+//
+// Everything stays on one centred axis all the way down: a centred mark over
+// left-aligned text is two columns pretending to be one.
+//
+// The vertical hairline on the trailing edge is the card's own division; it is
+// the reason none of this needs a box.
 .cardAside {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  // Gap between the mark and the text block (tightened).
-  gap: 0.35rem;
+  gap: 1.15rem;
   text-align: center;
 
   // Padding only on the hairline side: the group then centres in the space
@@ -217,16 +281,50 @@ $card-body: color-mix(in srgb, #{$color-dark} 94%, transparent);
   border-inline-end: 1px solid $card-rule;
 }
 
-// The two meta lines, grouped so they sit close together as one block. The
-// margin-bottom parks the space reclaimed from the (now smaller) gaps below the
-// block, keeping the centred group the same overall height — so the mark stays
-// exactly where it was instead of drifting down as the gaps shrink.
-.cardMeta {
+// The price and its footnote, welded: the deposit line is not a fifth fact in
+// the column, it is the small print of the figure directly above it, and at
+// this distance it reads as one object with two lines.
+//
+// A hairline over it, stretched across the column the same way the pair below
+// is. The rail is three kinds of fact — what it is (the mark), what it costs,
+// and who and when — and it now says so with two rules rather than with the
+// interval alone, which at this column width was reading as one unbroken run of
+// centred lines. Same rule, same spacing on both, so the three bands are even.
+.cardPriceBlock {
+  align-self: stretch;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.2rem;
-  margin-bottom: 1.9rem;
+
+  padding-top: 1.15rem;
+  border-top: 1px solid $card-rule;
+}
+
+// The second group: who it is for, and when it lands — the two facts that
+// qualify the price rather than state it.
+//
+// `align-self: stretch` is what lets the rule span the rail: every other child
+// here shrink-wraps to its text, so a border on any of them would be as wide as
+// the words above it. Stretched, the block takes the column and the rule reads
+// as a division of the card, the same hairline language as the ledger opposite
+// and the rail's own trailing edge.
+//
+// No margin-bottom any more. It used to hold the group above the card's middle,
+// which made sense when it was two short lines under a 12rem plate; with a
+// dominant price above it the block has no business being lifted off centre —
+// that is what put the mark near the ceiling with a void under it.
+.cardMeta {
+  align-self: stretch;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+
+  padding-top: 1.15rem;
+  border-top: 1px solid $card-rule;
 }
 
 // The Google glyph, rendered as a liquid-metal surface (MetallicPaint). It's a
@@ -234,10 +332,22 @@ $card-body: color-mix(in srgb, #{$color-dark} 94%, transparent);
 // so nothing here sets a fill. Centred in the column — the canvas's own ~15%
 // transparent padding (the viewBox is grown so the wavy edges never clip) is
 // symmetric, so the glyph sits dead-centre with no margin nudging needed.
+// Back up to 7rem. The canvas carries ~15% transparent padding of its own (the
+// viewBox is grown so the wavy edges never clip), so the drawn mark is always
+// meaningfully smaller than the box it is given — at 5rem the mark itself was
+// under 4.2rem and read as an icon dropped in the column rather than the plate
+// that opens it. The price still outweighs it: the mark is large but silent, a
+// single stroked shape, while the price is solid ink at 600.
+//
+// Free, in height terms: the rail totals ~22rem against a card floored at
+// 27.5rem, so it is centred inside space the offer column already paid for.
+// The canvas's padding is symmetric, so resizing the box scales the mark in
+// place — it stays centred, and the shader renders at the box's own device
+// pixels, so it stays sharp at any size.
 .cardIcon {
   display: block;
-  width: clamp(8rem, 12vw, 12rem);
-  height: clamp(8rem, 12vw, 12rem);
+  width: clamp(5.75rem, 9.5vw, 8.25rem);
+  height: clamp(5.75rem, 9.5vw, 8.25rem);
 
   canvas {
     display: block;
@@ -246,27 +356,72 @@ $card-body: color-mix(in srgb, #{$color-dark} 94%, transparent);
   }
 }
 
-// A four-word read of who the service is for. Spacing is owned by the aside's
-// gap so the three elements share one rhythm.
+// The price, and the anchor of the whole column — everything else in the rail
+// is read in relation to it. It carries full-strength ink at a size that lands
+// just under the title's, which is the hierarchy the two columns are meant to
+// have: the title names the package, the price is the fact you came for, and
+// the hairline between them is what stops the two from arguing.
+//
+// Tabular figures so the three prices stack into a column that lines up and a
+// locale swap can't shimmer the digits. `balance` because the custom tier's
+// figure is a short phrase ("A consultar" / "On request") rather than a number:
+// if the column is narrow enough to break it, it breaks evenly.
+.cardPrice {
+  font-size: clamp(1.75rem, 2.35vw, 2.25rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+  text-wrap: balance;
+  color: $color-dark;
+}
+
+// Who the package is for. A label, not a sentence — it was written as one and
+// set to four ragged centred lines in a 14rem column, which is the single thing
+// that made this rail read as a wall of equal parts. Two lines at most now, and
+// `balance` so they break evenly rather than leaving one word on the second.
+// Who the package is for — one line, always. It is a caption on the pair below
+// the rule, and a caption that breaks reads as a sentence: "Para requerimientos
+// específicos" set over two centred lines was the longest thing in the rail and
+// pulled more attention than the delivery date under it.
+//
+// `nowrap` and sized to the worst case rather than capped by a measure: the
+// longest of the three is ~31 characters, which at 0.78rem sits inside the
+// column's 14rem less its trailing padding. The cap comes off with it — a
+// measure has nothing to do on a line that cannot wrap.
 .cardTag {
-  font-size: 1.02rem;
-  font-weight: 500;
+  font-size: 0.78rem;
+  font-weight: 400;
   line-height: 1.4;
+  white-space: nowrap;
   color: $card-muted;
 }
 
-// The aside's one spend of colour: when it ships. Tabular figures so the week
-// counts sit on a steady rhythm and never shimmer on a locale swap.
+// The aside's one spend of colour, and the column's closing line: when it
+// ships. The colour is what gives it weight at this size — it is the only thing
+// in the rail besides the price that is meant to be picked out at a glance, and
+// they can share that job because one is ink and the other is accent. Tabular
+// figures so the week counts sit on a steady rhythm and never shimmer on a
+// locale swap.
 .cardTimeline {
-  font-size: 0.86rem;
+  font-size: 0.82rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   font-variant-numeric: tabular-nums;
   color: $color-accent;
 }
 
-// The offer column. The ledger anchors to the floor, so both panels carry weight
-// top and bottom.
+// The offer column: the numbered name, and the ledger. Pinned at both ends —
+// the title sits on the ceiling, the ledger hangs from the floor, and the slack
+// the card has spare collects between them (see .cardIncluded's `margin-top`).
+//
+// Both halves are compared across the three cards, and each from a different
+// edge. The titles are read as a set, so they have to start at one height: hung
+// from the bottom with the ledger, a name that takes two lines starts higher
+// than one that takes one, and the three stop agreeing. The ledger is compared
+// from its last row up — that row is where the eye leaves the card — so it is
+// the bottom of that block that has to hold still, and a package with a fourth
+// row grows upward into the gap rather than pushing its closing rule down.
 .cardMain {
   display: flex;
   flex-direction: column;
@@ -284,22 +439,34 @@ $card-body: color-mix(in srgb, #{$color-dark} 94%, transparent);
   color: $color-dark;
 }
 
-// Half voice: one line of what it is, not a paragraph. Sized up to a genuine
-// reading size — at ~1rem it was set like a caption while sitting in the widest
-// column on the page, which is what made it work to read.
-.cardLead {
-  margin-top: 0.9rem;
-  max-width: 44ch;
+// The rung number, inline with the name and set from it: 0.88em and the same
+// weight, so it is unmistakably part of the same line, and a half-strength
+// accent so it numbers the plate without competing with what the plate is
+// called. Tabular, because the three of them are one series read down the
+// stack and their figures should sit on the same rhythm.
+//
+// `em`, not `rem`: the title is a clamp across the viewport and the number has
+// to track it. The margin is in `em` for the same reason — the space after a
+// numeral should scale with the numeral, not stay a fixed 8px under a title
+// that grows by a third between the narrowest desktop and the widest.
+.cardIndex {
+  margin-right: 0.42em;
 
-  font-size: clamp(1.08rem, 1.15vw, 1.22rem);
-  line-height: 1.5;
-  text-wrap: pretty;
-  color: $card-muted;
+  font-size: 0.88em;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+  color: color-mix(in srgb, #{$color-accent} 55%, transparent);
 }
 
+// Hung from the floor of the column, with a minimum step down from the title.
+// The `auto` is what holds the ledger's closing rule at one height across the
+// three cards; the padding is the floor under it, so on a card with room to
+// spare the two blocks still can't drift into each other. With the card sized
+// close to what the tallest package needs, the auto resolves to little more
+// than that step anyway — it takes up a difference, not a screen of air.
 .cardIncluded {
   margin-top: auto;
-  padding-top: clamp(1.5rem, 2.5vw, 2.25rem);
+  padding-top: clamp(1.35rem, 2vw, 1.75rem);
 }
 
 // The ledger's eyebrow, in the deep accent — the paper-side echo of the mint
@@ -337,6 +504,89 @@ $card-body: color-mix(in srgb, #{$color-dark} 94%, transparent);
   color: $card-body;
 }
 
+// The rung below, carried whole. It is a ledger row like the others and keeps
+// their rhythm, but it is a different kind of claim — everything under it is
+// work done for this package, this one is work you already have — so it gets
+// the accent, a heavier setting, and a wash of the accent at 7% to seat it.
+//
+// The wash bleeds a little past the text on both sides and the row pulls the
+// same distance back, so the tint reads as a band across the ledger while the
+// text stays on the same left edge as every row below it. `border-radius: 2px`
+// only: a pill here would read as a chip dropped into a list of rules.
+//
+// The "+" is the whole grammar of the thing — "that, plus this" — and it lives
+// in the stylesheet because it is punctuation for the row, not part of the
+// sentence a translator writes.
+// The same row's worth of space, holding its place and showing nothing —
+// package 1 has no tier below it to inherit. It sits above the ledger's eyebrow
+// rather than inside the list, so the label still lands directly on the first
+// hairline; what it reserves is the height the missing row would have taken, so
+// the three cards keep the same number of slots.
+//
+// `visibility: hidden` rather than a fixed height: the box keeps every
+// dimension a real row has — its own padding, border and line-height — so the
+// reserved space tracks the row metrics instead of a number copied from them.
+.inheritsSpacer {
+  visibility: hidden;
+
+  padding: 0.9rem 0;
+  border-top: 1px solid transparent;
+
+  font-size: 1rem;
+  line-height: 1.5;
+
+  &::before {
+    content: "\00a0";
+  }
+}
+
+.inheritsItem {
+  padding-inline: 0.75rem;
+  margin-inline: -0.75rem;
+  border-radius: 2px;
+  background: color-mix(in srgb, #{$color-accent} 7%, transparent);
+
+  font-weight: 600;
+  color: $color-accent;
+
+  &::before {
+    content: "+";
+    margin-right: 0.5rem;
+    font-weight: 600;
+  }
+}
+
+// The deposit line, set directly under the price as its footnote. The faintest
+// thing in the rail — fainter than the tag, which is the next quietest — because
+// it is a condition of the figure above it and nothing more: at any more weight
+// it competes with the number it belongs to.
+//
+// One line at this measure, which is what keeps it reading as a sub-price
+// rather than as a paragraph. Tabular figures so the two cards that carry
+// amounts line their digits up as they stack; the middot is the divider,
+// because a rule here would echo the ledger's hairlines across the card.
+// Set as a caption rather than as a smaller sentence: uppercase and tracked at
+// 0.72rem, which is a different kind of type from the figure above it, not a
+// quieter amount of the same kind. That is what the distance from the price
+// asks for — dropping weight alone left two lines of the same voice with one
+// merely smaller, and the pair read as a price broken over two lines.
+//
+// It is the deposit and nothing else now. The balance was arithmetic the reader
+// can do from the total directly above it, and stating both made a two-figure
+// line under a one-figure headline — the percentage says the same thing in a
+// form you don't have to check.
+.cardTerms {
+  max-width: 30ch;
+
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  text-wrap: balance;
+  color: $card-faint;
+}
 
 // ─── The swipe track ────────────────────────────────────────────────────────
 
@@ -348,12 +598,12 @@ $card-body: color-mix(in srgb, #{$color-dark} 94%, transparent);
   width: 100%;
 }
 
-// A card as a slide, and a shorter read: the glance-line and the deliverables
-// ledger are dropped on this side (in Services.tsx), leaving the mark, when it
-// ships, the claim and one line of it. So the two-column split has nothing left
-// to divide — the rail unfolds into a strip across the top, mark on the left
-// and its timeline beside it, the hairline now running underneath. The same
-// shape on a tablet as on a phone: it is one card held in the hand either way.
+// A card as a slide, and a shorter read: the glance-line is dropped on this
+// side (in Services.tsx), leaving the mark, the price, when it ships, how it is
+// paid, the name and what it buys. So the two-column split has nothing left to
+// divide — the rail unfolds into a strip across the top, mark on the left and
+// the figures beside it, the hairline now running underneath. The same shape on
+// a tablet as on a phone: it is one card held in the hand either way.
 //
 // Full height so all three slides match the tallest — a track of cards that
 // changed height as they swung would read as the page jumping. The elevation
@@ -361,6 +611,11 @@ $card-body: color-mix(in srgb, #{$color-dark} 94%, transparent);
 // far cast has nowhere to fall and only muddies the ink.
 .slideCard {
   grid-template-columns: 1fr;
+  // Two rows here rather than the desktop's one, so the slack a shorter slide
+  // has spare needs telling where to go. All of it to the offer row: left to
+  // the default, the grid splits it between both rows and pushes the strip's
+  // hairline down away from the mark it underlines.
+  grid-template-rows: auto minmax(0, 1fr);
   height: 100%;
   min-height: 0;
 
@@ -383,29 +638,75 @@ $card-body: color-mix(in srgb, #{$color-dark} 94%, transparent);
   }
 
   // Held to a strip-sized mark on a tablet as well: it is a stamp on the card
-  // here, not the column-filling plate it is beside the desktop ledger.
+  // here, not the column-filling plate it is beside the desktop ledger. It
+  // tracks the desktop mark up by the same step, no further — beside a price
+  // rather than above one, its size is limited by the strip's height, not by
+  // the room in a column.
   .cardIcon {
-    width: clamp(4.75rem, 10vw, 6.5rem);
-    height: clamp(4.75rem, 10vw, 6.5rem);
+    width: clamp(5.25rem, 10vw, 7rem);
+    height: clamp(5.25rem, 10vw, 7rem);
     // Tighten the canvas's transparent inset against the card edge in the strip.
     margin-left: -0.6rem;
   }
 
-  // In the strip the meta sits left-aligned beside the mark; the vertical-centre
-  // compensation margin isn't needed here.
-  .cardMeta {
+  // No reserved inheritance row on this side. It exists so the three *pinned*
+  // cards resolve to one height with nothing hanging out from behind the card
+  // in front; here the slides are levelled by `height: 100%`, so all it does is
+  // open a row of empty paper over package 1's ledger, on the screen with the
+  // least paper to spare. Package 1 simply ends a row earlier than the other
+  // two, and the slack goes under it where it reads as margin.
+  .inheritsSpacer {
+    display: none;
+  }
+
+  // Laid out along the strip, the two groups keep the same hierarchy they have
+  // stacked: the price block takes the room left over beside the mark, and the
+  // delivery date closes the strip at its far end. `margin-inline-start: auto`
+  // on the second group is what parts them — in a row the vertical gap that
+  // separated them is no longer doing anything.
+  // Laid along the strip, the price block loses the stacked layout's rule with
+  // the stack: in a row the mark is beside it, not above it, so a border-top
+  // would draw a line across the strip rather than under the mark.
+  .cardPriceBlock {
+    align-self: center;
     align-items: flex-start;
-    margin-bottom: 0;
+
+    padding-top: 0;
+    border-top: none;
+  }
+
+  // The stacked layout's rule comes off with the stack. Along a strip the two
+  // groups are already parted by the width between them, and `align-self`
+  // reverts to centring: stretched, the block would take the strip's full
+  // height and hang its two lines from the top of it.
+  .cardMeta {
+    align-self: center;
+    align-items: flex-end;
+    margin-inline-start: auto;
+    padding-top: 0;
+    border-top: none;
+    text-align: right;
+  }
+
+  // The measure cap comes off: the block has the card's full width here rather
+  // than a 15rem column, so there is nothing for it to protect against.
+  .cardTerms {
+    max-width: none;
   }
 
   .cardMain {
     padding-inline-start: 0;
   }
 
-  // Nothing follows the lead now, so it sets the card's floor. Capped shorter
-  // than the desktop measure — this column is the full width of a phone.
-  .cardLead {
-    max-width: 38ch;
+  // Tighter than the desktop's, and without its `margin-top: auto`. The desktop
+  // hangs the ledger from the floor so three pinned cards line their closing
+  // rules up; a slide has only itself to agree with, and `height: 100%` already
+  // levels the track — hung down there, the slack would open between the title
+  // and the ledger instead of closing the card. Here it opens as soon as the
+  // title is done.
+  .cardIncluded {
+    margin-top: 0;
+    padding-top: 1.25rem;
   }
 }
 
@@ -456,8 +757,64 @@ $card-body: color-mix(in srgb, #{$color-dark} 94%, transparent);
   }
 }
 
+// Phones. Everything below is scoped to .slideCard, which only ever exists
+// under the collapse (see Services.tsx) — the pinned stack is not mounted at
+// these widths, so none of it can reach the desktop card.
 @media (max-width: 48rem) {
   .services {
     padding-top: $section-top-mobile;
+  }
+
+  // The strip breaks in two. On a tablet the mark, the price and the delivery
+  // date sit along one line with room to spare; at 375px they do not, and the
+  // three were splitting about 230px between them — the price block squeezed
+  // against a delivery date wrapping onto three ragged right-aligned lines.
+  //
+  // Wrapped, the strip reads as what it is: the mark and the figure it belongs
+  // to on the first line, when it ships on the second. `flex-wrap` rather than
+  // a second layout, because the only thing that has to change is where the
+  // second group goes when the first one runs out of room.
+  //
+  // What this leaves the price block is about 140px, which is the measure the
+  // third package's copy is written to (see the note on its price in the
+  // dictionaries): a figure is short, a phrase standing in for one has to be
+  // kept short, or it sets over two lines while the other two cards' prices sit
+  // on one and that slide stops matching the pair beside it.
+  .slideCard .cardAside {
+    flex-wrap: wrap;
+    row-gap: 0.85rem;
+  }
+
+  // Its own line, and left-aligned with everything above it. `margin-inline-
+  // start: auto` was what pushed it to the far end of the strip; on a line of
+  // its own that would park it against the right edge with the whole card's
+  // width of nothing beside it.
+  .slideCard .cardMeta {
+    flex-basis: 100%;
+    margin-inline-start: 0;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  // A step down in the ledger's density, and only here. The rows are the part
+  // of the card that gets read line by line, and at a phone's measure most of
+  // them take two or three lines each — at the desktop's row padding four of
+  // those is most of a screen. Type, leading and padding all come down
+  // together, so the rows keep their proportions instead of turning into
+  // cramped full-size text.
+  .slideCard {
+    .includedLabel {
+      margin-bottom: 0.55rem;
+    }
+
+    .includedItem {
+      padding: 0.75rem 0;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .cardIncluded {
+      padding-top: 1.1rem;
+    }
   }
 }

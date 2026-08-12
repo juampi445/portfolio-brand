@@ -9,6 +9,7 @@
     "home": "Home",
     "projects": "Projects",
     "services": "Services",
+    "process": "Process",
     "about": "About",
     "contact": "Contact",
     "cta": "Let's talk",
@@ -110,48 +111,107 @@
   },
   "services": {
     "title": "Services",
-    "heading": "Nearly everything I build is one of three shapes.",
-    "lead": "Fixed scope, honest timeline, built to last.",
+    "heading": "Clear packages, no surprises.",
     "includedLabel": "Included",
     "items": {
       "landing": {
-        "title": "Landing Pages",
-        "tag": "One offer, one page",
-        "lead": "A single page built to do one thing: turn the visitor in front of it into a lead or a sale.",
+        "index": "01",
+        "title": "Professional Site",
+        "price": "USD 500",
+        "tag": "For professionals and services",
         "included": [
-          "Everything points at one call to action",
-          "Loads in under a second on any phone",
-          "Analytics and tracking wired in from day one"
+          "Custom design from scratch, up to 5 sections",
+          "Optimised for Google and fast loading: SEO, Search Console and performance",
+          "Contact form to your inbox + button to WhatsApp and socials"
         ],
-        "timeline": "Live in 1 to 2 weeks"
+        "terms": "Deposit USD 200 (40%)",
+        "timeline": "Delivered in 2 weeks"
       },
       "events": {
-        "title": "Event Websites",
-        "tag": "For the whole occasion",
-        "lead": "One link that carries the event, from the first save-the-date to the morning of.",
+        "index": "02",
+        "title": "Web + Panel",
+        "price": "USD 750",
+        "tag": "For those who update often",
+        "inherits": "Everything in Package 1",
         "included": [
-          "RSVPs and the guest list, handled on the site",
-          "Styled to match your invitations",
-          "Schedule, directions and updates in one place"
+          "Custom-built administration panel",
+          "Edit text, images and sections without depending on anyone",
+          "Use it from your phone or your computer"
         ],
-        "timeline": "Live in 2 to 3 weeks"
+        "terms": "Deposit USD 300 (40%)",
+        "timeline": "Delivered in 2 to 3 weeks"
       },
       "professional": {
-        "title": "Professional Websites",
-        "tag": "Your full presence",
-        "lead": "The complete site for a name that has to look established from the very first screen.",
+        "index": "03",
+        "title": "Custom Build",
+        "price": "On request",
+        "tag": "For specific requirements",
+        "inherits": "Everything in Package 1 or 2",
+        "includedLabel": "For example",
         "included": [
-          "Designed around your identity, never a template",
-          "Content you can update yourself",
-          "Search-ready, and bilingual when you need it"
+          "Appointment booking and attendance confirmation",
+          "Integrations and custom-built sections",
+          "We quote it together based on your project"
         ],
-        "timeline": "Live in 3 to 4 weeks"
+        "terms": "Quote based on scope",
+        "timeline": "Scope to be defined"
       }
     },
     "cta": {
-      "question": "Need something outside these three?",
-      "action": "Let's scope it together."
+      "question": "Not sure which one fits you?",
+      "action": "Message me and we'll see."
     }
+  },
+  "process": {
+    "title": "Process",
+    "heading": "From the first message to your site online.",
+    "intro": "Five steps. In each one you know what I do and what I need from you.",
+    "lanes": {
+      "you": "You",
+      "me": "Me",
+      "both": "Both"
+    },
+    "stamps": {
+      "deposit": "40% deposit",
+      "balance": "60% balance"
+    },
+    "steps": [
+      {
+        "title": "We talk",
+        "description": "You tell me what you need and who it is for. We sort it out over WhatsApp, with messages or voice notes to move faster, and if you would rather talk we book a call. We come out of it with the package chosen."
+      },
+      {
+        "title": "You book",
+        "description": "The deposit holds your slot in the schedule and starts the work. I send you a short checklist of what I need: logo, texts, photos and socials. If something is missing, we sort it out together."
+      },
+      {
+        "title": "Design and development",
+        "description": "I build your site from scratch and share progress as I go. The delivery time starts running once I have all the material."
+      },
+      {
+        "title": "Revisions",
+        "description": "Two rounds of changes to leave it the way you had it in your head. In each round you gather your comments and send them in one go."
+      },
+      {
+        "title": "Delivery and launch",
+        "description": "You see the finished site in a preview. You approve it, you pay the balance and I publish it on your domain, ready to go."
+      }
+    ],
+    "notesTitle": "The fine print",
+    "notes": [
+      {
+        "label": "Hosting",
+        "body": "Included. Nothing extra to pay to keep the site online."
+      },
+      {
+        "label": "Domain",
+        "body": "You buy it yourself, around USD 10 to 15 a year, and it stays in your name. Setting it up is on me."
+      },
+      {
+        "label": "Maintenance",
+        "body": "No monthly fee. Once the site is live it keeps running on its own; later changes are quoted when you want them, never charged as a retainer."
+      }
+    ]
   },
   "about": {
     "title": "About",

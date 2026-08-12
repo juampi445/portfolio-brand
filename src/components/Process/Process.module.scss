@@ -1,0 +1,392 @@
+@use "../../styles/variables" as *;
+
+// Paper tones, one family with the service cards and the About ledger — this is
+// the same ink on the same paper, at four strengths.
+$rule: color-mix(in srgb, #{$color-dark} 14%, transparent);
+$track: color-mix(in srgb, #{$color-dark} 20%, transparent);
+$ring: color-mix(in srgb, #{$color-dark} 42%, transparent);
+$muted: color-mix(in srgb, #{$color-dark} 62%, transparent);
+$body: color-mix(in srgb, #{$color-dark} 80%, transparent);
+
+// Plain paper, not the mint wash About sits on. The run down the page is
+// Projects, then the ink of Services, then this, then About's mint, then the
+// ink again — so the two light sections are neighbours and must not read as one
+// long pale stretch. This is the same $color-light the service cards are cut
+// from, which is also the rhyme: the cards were pieces of this floated over the
+// dark, and here the whole floor is made of it.
+.process {
+  padding: calc(#{$nav-height} + #{$gutter}) $gutter $gutter;
+
+  background-color: $color-light;
+  color: $color-dark;
+}
+
+.inner {
+  width: 100%;
+  max-width: 78rem;
+  margin-inline: auto;
+}
+
+// ─── The band ───────────────────────────────────────────────────────────────
+
+// Claim left, the line that qualifies it right, both hung from the same
+// baseline, with a rule under the pair. Not the sticky 5/7 rail Services and
+// About both use: the sequence under this needs the full measure for its rails,
+// and a third section built on the same split is what made this one read as
+// filler between the two.
+//
+// `align-items: end` is the whole composition: the intro's last line sits on
+// the heading's last line, so the band closes on one edge however either of
+// them wraps in either language.
+.head {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  align-items: end;
+  column-gap: clamp(2rem, 6vw, 5rem);
+
+  padding-bottom: clamp(2rem, 4vw, 3rem);
+  border-bottom: 1px solid $rule;
+}
+
+// The eyebrow. Mint sunk into the ink, not the raw mint: on paper the brand
+// tone reads at about 1.6:1 and disappears. Same value the service cards' own
+// "Incluye" label carries, which is the paper-side voice of this colour.
+.label {
+  display: block;
+  margin-bottom: 0.9rem;
+
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: $color-accent;
+}
+
+.heading {
+  font-size: clamp(1.75rem, 3vw, 2.75rem);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+// Half the heading's voice and none of its weight: it explains the diagram
+// below (that every step names who is holding the work), which is the one thing
+// a reader needs before the rails mean anything.
+.intro {
+  max-width: 38ch;
+
+  font-size: 1rem;
+  line-height: 1.6;
+  text-wrap: pretty;
+  color: $muted;
+}
+
+// ─── The sequence ───────────────────────────────────────────────────────────
+
+// No rules between rows, and that is deliberate. Two other sections on this
+// page are hairline ledgers; a third would read as the same object again. Here
+// the rails are the only continuous line and the space between rows does the
+// parting, which is what makes the sequence read as a route rather than a table.
+.steps {
+  list-style: none;
+}
+
+.row {
+  // Both are referenced from inside the rail, which has to know the row's own
+  // padding to bridge the gap between one row's rails and the next, and where
+  // the first line of the title sits so a node can be set against it.
+  --row-pad: clamp(1.6rem, 2.8vw, 2.25rem);
+  --node-y: 0.85rem;
+  --rail-w: 4rem;
+
+  display: grid;
+  grid-template-columns:
+    2.25rem
+    var(--rail-w)
+    minmax(9rem, 13rem)
+    minmax(0, 1fr);
+  align-items: start;
+  column-gap: clamp(1.25rem, 2.5vw, 2rem);
+
+  padding-block: var(--row-pad);
+}
+
+// The step number, in the mono voice the site already uses for figures that
+// mark a position rather than state a quantity (the services index, the sidebar
+// rows). Held well back: it counts the steps, it does not announce them.
+.marker {
+  padding-top: 0.2rem;
+
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: $muted;
+}
+
+// ─── The handoff diagram ────────────────────────────────────────────────────
+
+// Two rails run the length of the sequence: yours on the left, mine on the
+// right. Each step puts a node on the rail that holds the work, and a tie
+// across both when we are on it together, so the sequence draws the braid the
+// copy describes: we talk, you book, I build, we review, we launch.
+//
+// `align-self: stretch` is load-bearing. Every child here is absolutely
+// positioned, so the cell would otherwise collapse to nothing and the rails
+// with it; stretched, it takes the row's height and the rails span it.
+.rail {
+  position: relative;
+  align-self: stretch;
+}
+
+// Drawn per row rather than once down the section, so each segment fades in
+// with the row it belongs to (see Reveal in Process.tsx) and the line assembles
+// as you scroll. The negative insets are exactly the row's own padding, so
+// consecutive segments meet with nothing between them and read as one rail.
+.track {
+  position: absolute;
+  top: calc(-1 * var(--row-pad));
+  bottom: calc(-1 * var(--row-pad));
+  width: 1px;
+
+  background: $track;
+}
+
+.trackYou {
+  left: 22%;
+}
+
+.trackMe {
+  left: 78%;
+}
+
+// Set against the first line of the title beside it, not the top of the row:
+// the node marks where the step is named.
+.node {
+  position: absolute;
+  top: var(--node-y);
+  width: 0.5rem;
+  height: 0.5rem;
+  transform: translate(-50%, -50%);
+
+  border: 1px solid $ring;
+  border-radius: 50%;
+  // Knocks the rail out behind the ring, so the line passes under an open node
+  // instead of through it.
+  background: $color-light;
+}
+
+// The two steps where money moves are the section's only spend of colour, and
+// they are filled rather than open: the rail runs through them. Never the only
+// carrier of that fact — the actor line beside each says "Seña 40%" in words.
+.node[data-paid] {
+  border-color: $color-accent;
+  background: $color-accent;
+}
+
+.nodeYou {
+  left: 22%;
+}
+
+.nodeMe {
+  left: 78%;
+}
+
+// A step we are both on, drawn as what it is: the two rails tied together at
+// that height.
+.tie {
+  position: absolute;
+  top: var(--node-y);
+  left: 22%;
+  right: 22%;
+  height: 1px;
+
+  background: $track;
+}
+
+// The last row closes the diagram: the rails stop a little under the final
+// node and a cap is drawn across them. Without it the two lines would simply
+// run out at the bottom of the last description, which reads as the section
+// being cut off rather than the sequence ending.
+.rail[data-last] .track {
+  bottom: auto;
+  height: calc(var(--row-pad) + var(--node-y) + 2rem);
+}
+
+.terminal {
+  position: absolute;
+  top: calc(var(--node-y) + 2rem);
+  left: 22%;
+  right: 22%;
+  height: 1px;
+
+  background: $color-accent;
+}
+
+// ─── The step ───────────────────────────────────────────────────────────────
+
+.stepHead {
+  min-width: 0;
+}
+
+.stepTitle {
+  font-size: 1.3rem;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+// The rails, said in words. Deliberately small and tracked — it is a caption on
+// the title, and the reader who wants it will find it beside the mark it
+// explains.
+.actor {
+  margin-top: 0.5rem;
+
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, #{$color-dark} 72%, transparent);
+}
+
+.actorSep {
+  margin-inline: 0.45em;
+  color: $ring;
+}
+
+.stamp {
+  color: $color-accent;
+}
+
+.stepDescription {
+  max-width: 58ch;
+
+  font-size: 1rem;
+  line-height: 1.65;
+  text-wrap: pretty;
+  color: $body;
+}
+
+// ─── The fine print ─────────────────────────────────────────────────────────
+
+// Outside the sequence and set to say so: it starts past the rails, under a
+// rule of its own. Not a sixth step and not a footnote either — these are the
+// two or three things a reader would otherwise have to ask.
+.notes {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+  padding-top: clamp(1.5rem, 3vw, 2rem);
+  border-top: 1px solid $rule;
+}
+
+.notesTitle {
+  margin-bottom: clamp(1.25rem, 2.5vw, 1.75rem);
+
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: $muted;
+}
+
+// As many across as fit at a readable measure, with no breakpoint deciding it:
+// three on a desktop, two on a tablet, one on a phone. Which matters here more
+// than usual, because the two locales do not carry the same number of notes —
+// Spanish adds how the USD prices are paid in pesos.
+.noteList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+}
+
+.noteLabel {
+  margin-bottom: 0.5rem;
+
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: $color-dark;
+}
+
+.noteBody {
+  max-width: 44ch;
+
+  font-size: 0.9rem;
+  line-height: 1.6;
+  text-wrap: pretty;
+  color: $muted;
+}
+
+// ─── Responsive ─────────────────────────────────────────────────────────────
+
+// 64rem, the same line About collapses on rather than the $compact-max the
+// Services stack uses: that breakpoint exists because a pinned card stack has
+// to stop being mounted at all below it. This section is text and hairlines,
+// and it holds its shape as long as the columns are worth having.
+@media (max-width: 64rem) {
+  .process {
+    padding: $section-top-tablet 1.5rem 3.5rem;
+  }
+
+  // The band stacks: the intro drops under the heading and keeps its own
+  // measure. `align-items: end` has nothing to do in one column.
+  .head {
+    grid-template-columns: 1fr;
+    align-items: start;
+    row-gap: 1.25rem;
+  }
+
+  .intro {
+    max-width: 52ch;
+  }
+
+  // Three columns instead of four: the title and its actor line keep the head
+  // column, and the description drops under both. The rails stay — they are the
+  // section's whole structure — but narrow to what two dots and a tie need.
+  .row {
+    --rail-w: 2.75rem;
+    --node-y: 0.8rem;
+
+    grid-template-columns: 1.75rem var(--rail-w) minmax(0, 1fr);
+    column-gap: 1rem;
+  }
+
+  // Two rows now, so the rails have to be told to cross both of them: stretched
+  // inside row 1 alone they would stop level with the title and leave the
+  // description hanging off nothing. `span 2` rather than `1 / -1` — the rows
+  // here are implicit, and a negative line number counts back from the end of
+  // the *explicit* grid, which has none.
+  .rail {
+    grid-row: span 2;
+  }
+
+  .stepDescription {
+    grid-column: 3;
+    margin-top: 0.75rem;
+    max-width: none;
+  }
+
+  .stepTitle {
+    font-size: 1.15rem;
+  }
+}
+
+// Phones: the bar shrinks to $nav-height-mobile, so the measurement above it
+// does too.
+@media (max-width: 48rem) {
+  .process {
+    padding-top: $section-top-mobile;
+  }
+
+  .row {
+    --rail-w: 2.25rem;
+  }
+
+  .marker {
+    font-size: 0.75rem;
+  }
+
+  .stepDescription {
+    font-size: 0.95rem;
+  }
+}

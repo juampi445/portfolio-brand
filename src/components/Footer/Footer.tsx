@@ -30,6 +30,7 @@ export default function Footer({ dict }: { dict: Dictionary }) {
   const sections = [
     { label: nav.projects, href: "#projects" },
     { label: nav.services, href: "#services" },
+    { label: nav.process, href: "#process" },
     { label: nav.about, href: "#about" },
     { label: nav.contact, href: "#contact" },
   ];

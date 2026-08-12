@@ -52,5 +52,23 @@
     "url": "https://rocketly.com.ar",
     "video": "/videos/rocketly.webm",
     "accent": "#1a7855"
+  },
+  {
+    "slug": "void-strikers",
+    "title": "Void Strikers",
+    "monogram": "VS",
+    "year": "2023",
+    "url": null,
+    "video": "/videos/void.webm",
+    "accent": "#272744"
+  },
+  {
+    "slug": "lol-champions",
+    "title": "LoL Champions",
+    "monogram": "LC",
+    "year": "2022",
+    "url": "https://league-of-legends-project.vercel.app/",
+    "video": "/videos/lol-video.webm",
+    "accent": "#c89b3c"
   }
 ]

@@ -412,12 +412,18 @@ $line: color-mix(in srgb, #{$color-light} 14%, transparent);
     padding: 1.75rem 1.5rem;
   }
 
-  // The signature block centres: a name, a line under it and two short lines
-  // about the studio — a closing plate, not a column of a record. The two link
-  // columns below it deliberately do not follow. They are navigation and a list
-  // of channels, each row an icon and a label, and a centred list has no edge
-  // for the eye to run down.
-  .brand {
+  // Everything on one axis. Stacked, the footer is a single narrow column of
+  // short blocks, and the three of them left-aligned inside a centred pane read
+  // as content that failed to fill it: the pane is centred, the baseline under
+  // it is centred, and only the record in between hangs off the left edge.
+  //
+  // The trade is real and worth naming — a centred list of links has no edge
+  // for the eye to run down, which is why these hold their left edge on every
+  // wider layout. At three and four rows apiece, with the label above each set
+  // in the accent, the group is short enough to be read as a plate rather than
+  // scanned as a list.
+  .brand,
+  .column {
     align-items: center;
     text-align: center;
     margin-inline: auto;

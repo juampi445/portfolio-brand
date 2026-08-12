@@ -35,8 +35,8 @@ $panel-duration: 620ms;
 $items-delay: $panel-delay + $panel-duration * 0.15;
 $items-stagger: 90ms;
 // Rows in the list, which is what the stagger loop below runs over: Home, then
-// the four sections. Matches menuLinks in Nav.tsx.
-$item-count: 5;
+// the five sections. Matches menuLinks in Nav.tsx.
+$item-count: 6;
 $items-duration: 900ms;
 $foot-delay: $panel-delay + $panel-duration * 0.4;
 $foot-duration: 550ms;
